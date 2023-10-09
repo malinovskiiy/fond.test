@@ -13,7 +13,7 @@ session_start();
     <link rel="stylesheet" href="/assets/css/sign-in.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="icon" href="./favicon.svg">
-    <title>Портал стипендиатов Фонда</title>
+    <title><?php echo isset($site_title) ? $site_title . ' | Портал стипендиатов Фонда' : 'Портал стипендиатов Фонда'; ?></title>
     <?php require_once "functions.php"?>
 </head>
 <body>
@@ -44,7 +44,7 @@ session_start();
                   <ul class="dropdown-menu text-small">
                     <li><a class="dropdown-item text-md-end" href="/dashboard">Мой профиль</a></li>
                     <li><a class="dropdown-item text-md-end" href="/edit-profile">Настройки профиля</a></li>
-                    <li><a class="dropdown-item text-md-end" href="/edit-complex-rating">Комплексный рейтинг</a></li>
+                    <li><a class="dropdown-item text-md-end" href="/edit-complex-rating">Настройки рейтинга</a></li>
                    
                     
                     

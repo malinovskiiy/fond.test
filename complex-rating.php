@@ -7,10 +7,7 @@ if(isset($_GET['id']) && is_numeric($_GET['id']) && $UserService->getUserById($_
 } else {
     header('Location: ./404.php');
 }
-
-
 ?>
-
 
 <div class="page-wrapper position-relative py-5">
     <div class="container pt-5">
@@ -25,579 +22,351 @@ if(isset($_GET['id']) && is_numeric($_GET['id']) && $UserService->getUserById($_
                                         <div class="tab-pane fade show active" id="v-pills-science-activity" role="tabpanel" aria-labelledby="v-pills-science-activity-tab">
                                             
                                             <div class="d-flex flex-wrap profile-input mb-3 justify-content-between">
-                                                <span class="text-primary fw-bold fs-5">Научная деятельность пользователя<br><span class="text-dark"><?php echo $user_data['first_name']?> <?php echo $user_data['last_name']?></span></span><p>* - обязательные поля</p>
+                                                <span class="text-primary fw-bold fs-5">Научная деятельность пользователя<br><span class="text-dark"><?php echo $user_data['first_name']?> <?php echo $user_data['last_name']?></span></span>
                                             </div>
-                                            <form id="create-scientific-activity" method="POST" class="profile-input-group">
-
-                                               <div class="row">
-                                                    <div class="col-lg-6 profile-input mb-3">                                       
-                                                        <label class="form-label">Выберите категорию *</label>                                        
-                                                        <select class="form-select" name="activity_category" id="activity_category">
-                                                            <option value="publication">Публикация</option>
-                                                            <option value="intellectual_property">Интеллектуальная собственность</option>
-                                                            <option value="grant_activity">Грантовая деятельность</option>
-                                                            <option value="conferences">Конференции и конкурсы НИР</option>
-                                                        </select>
+                                            <?php if(!empty($ScientificActivityService->getAll($user_data['id']))):?>
+                                                <div class="row blog-posts">
+                                                <?php foreach($ScientificActivityService->getAll($user_data['id']) as $activity):?>
+                                                    <div class="col-lg-6 blog-post mt-4">
+                                                        
+                                                        <div class="blog-post-image w-100 mb-3">
+                                                            <img src="<?php echo (!empty($activity['image'])) ? $activity['image'] : '/assets/img/placeholder.jpg'; ?>" alt="blog-post-image">
+                                                        </div>
+                                                            
+                                                        <small class="blog-post-info text-muted"><?php echo $ScientificActivityService->generateActivityString($activity['activity_category'], $activity['activity_type'], $activity['activity_subtype'], $activity['year'])?></small>
+                                                        <h6 class="blog-post-title mt-3"><?php echo $activity['title']?></h6>
+                                                        <p class="blog-post-preview-text mt-3"><?php echo $activity['preview_text']?></p>
+                                                        <?php if(!empty($activity['link'])): ?>
+                                                            <a href="<?php echo $activity['link'] ?>" class="text-primary blog-post-link me-3">Ссылка <i class="fa-solid fa-up-right-from-square ms-2"></i></a>
+                                                        <?php endif ?>
+                                                        <?php if($user_data['id'] === $_SESSION['user']['id']):?>
+                                                        
+                                                                
+                                                                <a href="rating-controller.php?delete_activity_id=<?php echo $activity['activity_id']?>&delete_activity_table_name=scientific_activity&user_id=<?php echo $user_data['id']?>" class="btn btn-sm btn-outline-danger">Удалить</a>
+                                                                <a href="update-scientific-activity?id=<?php echo $activity['activity_id']?>" class="btn btn-sm btn-outline-success ms-2">Изменить</a>
+                                                            
+                                                            
+                                                        <?php endif ?>
                                                     </div>
-                                                    
-                                               </div>
-
-                                               <div class="row science_activity_type">
-                                                    
-                                               </div>
-                                               <!-- НЕ ЗНАЧАЩИЕ ПОЛЯ -->
-                                               <div class="profile-input mb-3">
-                                                   
-                                                   <label class="form-label">Год *</label>
-                                                
-                                                <div class="col-lg-2">
-                                                <input type="text" id="science-year-input" class="form-control"  aria-describedby="emailHelp" required value="">
-                                                </div>
-                                               </div>
-                                               <div class="profile-input mb-3">
-                                                   
-                                                   <label class="form-label">Полное название *</label>
-                                                
-                                                   
-                                                   <input type="text" id="science-title-input" class="form-control"  aria-describedby="emailHelp" required value="">
-                                                   
-                                                   
-                                           
-                                               </div>
-                                               <div class="profile-input mb-3">
-                                                   
-                                                   <label class="form-label">Краткое описание *</label>
-                                                
-                                                   
-                                                   <textarea id="science-description-input" class="form-control"  aria-describedby="emailHelp" required value="
-                                                    "></textarea>
-                                                   
-                                           
-                                               </div>
-                                               <div class="profile-input mb-3">
-                                                   
-                                                   <label class="form-label">Ссылка (необязательно)</label>
-                                                
-                                                   
-                                                   <input type="text" id="science-link-input" class="form-control"  aria-describedby="emailHelp" value="">
-                                                   
-                                                   
-                                           
-                                               </div>
-                                                <div class="row">
-                                                    <div class="col-lg-4">
-                                                        <button type="submit" class="btn btn-primary w-100">Сохранить</button>
-                                                    </div>
-                                                    <div class="col-lg-4">
-                                                        <a href="/dashboard" class="btn btn-outline-primary">Вернуться назад</a>
-                                                    </div>
-                                                </div>
-                                                <!-- еуые -->
-                                            </form>        
+                                                    <?php endforeach;?>
+                                                </div>  
+                                                <nav>
+                                                    <ul class="pagination justify-content-center mt-5" id="science-pagination">
+                                                        <!-- Кнопка "Previous" -->
+                                                        <li class="page-item disabled" id="prev-page">
+                                                            <button class="page-link" tabindex="-1" aria-disabled="true">Previous</button>
+                                                        </li>
+                                                        <!-- Номера страниц будут добавлены здесь динамически -->
+                                                        <!-- Кнопка "Next" -->
+                                                        <li class="page-item" id="next-page">
+                                                            <button class="page-link" >Next</button>
+                                                        </li>
+                                                    </ul>
+                                                </nav>    
+                                            <?php else: ?>
+                                                Нет данных
+                                            <?php endif ?>
                                         </div>
                                         <div class="tab-pane fade " id="v-pills-scholarship" role="tabpanel" aria-labelledby="v-pills-scholarship-tab">
                                             <!-- Update study info form -->
                                             <div class="d-flex flex-wrap profile-input mb-3 justify-content-between">
-                                                <span class="text-primary fw-bold fs-5">Добавить стипендиальное поощрение/премию</span><p>* - обязательные поля</p>
+                                                <span class="text-primary fw-bold fs-5">Стипендиальные поощрения/премии пользователя<br><span class="text-dark"><?php echo $user_data['first_name']?> <?php echo $user_data['last_name']?></span></span>
                                             </div>
-                                            <form id="create-scholarship-activity" method="POST" class="profile-input-group">
+                                            <?php if(!empty($ScholarshipActivityService->getAll($user_data['id']))):?>
 
-                                            
-
-                                               <div class="row scholarship_activity_type">
-                                                    <div class="col-lg-6 profile-input mb-3">
-                                                        
-                                                        <label class="form-label">Выберите тип стипендии *</label>
-                                                
-                                                        <select class="form-select" id="scholarship_type">
-                                                        <option value="international">Международная (10 баллов)</option>
-                                                        <option value="russian">Всероссийская / организованная промышленным предприятием (5 баллов)</option>
-                                                        <option value="regional">Региональная (3 балла)</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                               <!-- НЕ ЗНАЧАЩИЕ ПОЛЯ -->
-                                               <div class="profile-input mb-3">
-                                                   
-                                                   <label class="form-label">Год *</label>
-                                                
-                                                <div class="col-lg-2">
-                                                <input type="text" id="scholarship-year-input" class="form-control"  aria-describedby="emailHelp" required value="">
-                                                </div>
-                                               </div>
-                                               <div class="profile-input mb-3">
-                                                   
-                                                   <label class="form-label">Полное название *</label>
-                                                
-                                                   
-                                                   <input type="text" id="scholarship-title-input" class="form-control"  aria-describedby="emailHelp" required value="">
-                                                   
-                                                   
-                                           
-                                               </div>
-                                               <div class="profile-input mb-3">
-                                                   
-                                                   <label class="form-label">Краткое описание</label>
-                                                
-                                                   
-                                                   <textarea id="scholarship-description-input" class="form-control"  aria-describedby="emailHelp" value="
-                                                    "></textarea>
-                                                   
-                                           
-                                               </div>
-                                               <div class="profile-input mb-3">
-                                                   
-                                                   <label class="form-label">Ссылка (необязательно)</label>
-                                                
-                                                   
-                                                   <input type="text" id="scholarship-link-input" class="form-control"  aria-describedby="emailHelp" value="">
-                                                   
-                                                   
-                                           
-                                               </div>
-                                                <div class="row">
-                                                    <div class="col-lg-4">
-                                                        <button type="submit" class="btn btn-primary w-100">Сохранить</button>
-                                                    </div>
-                                                    <div class="col-lg-4">
-                                                        <a href="/dashboard" class="btn btn-outline-primary">Вернуться назад</a>
-                                                    </div>
-                                                </div>
-                                                <!-- еуые -->
-                                            </form>  
+                                                <div class="row blog-posts">
+                                                    <?php foreach($ScholarshipActivityService->getAll($user_data['id']) as $activity):?>
+                                                        <div class="col-lg-6 blog-post mt-4">
+                                                            <div class="blog-post-image w-100 mb-3">
+                                                                <img src="<?php echo (!empty($activity['image'])) ? $activity['image'] : '/assets/img/placeholder.jpg'; ?>" alt="blog-post-image">
+                                                            </div>
+                                                            <small class="blog-post-info text-muted"><?php echo $ScholarshipActivityService->generateActivityString($activity['activity_category'],'', '', $activity['year'])?></small>
+                                                            <h6 class="blog-post-title mt-3"><?php echo $activity['title']?></h6>
+                                                            <p class="blog-post-preview-text mt-3"><?php echo $activity['preview_text']?></p>
+                                                            <?php if(!empty($activity['link'])): ?>
+                                                                <a href="<?php echo $activity['link'] ?>" class="text-primary blog-post-link me-3">Ссылка <i class="fa-solid fa-up-right-from-square ms-2"></i></a>
+                                                            <?php endif ?>                                                            
+                                                            <?php if($user_data['id'] === $_SESSION['user']['id']):?>
+                                                                    <a href="rating-controller.php?delete_activity_id=<?php echo $activity['activity_id']?>&delete_activity_table_name=scholarship_activity&user_id=<?php echo $user_data['id']?>" class="btn btn-sm btn-outline-danger">Удалить</a>
+                                                                    <a href="update-scholarship-activity?id=<?php echo $activity['activity_id']?>" class="btn btn-sm btn-outline-success ms-2">Изменить</a>
+                                                            <?php endif ?>
+                                                        </div>
+                                                    <?php endforeach;?>
+                                                </div>    
+                                                <nav>
+                                                    <ul class="pagination justify-content-center mt-5" id="scholarship-pagination">
+                                                        <!-- Кнопка "Previous" -->
+                                                        <li class="page-item disabled" id="prev-page">
+                                                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true"></a>
+                                                        </li>
+                                                        <!-- Номера страниц будут добавлены здесь динамически -->
+                                                        <!-- Кнопка "Next" -->
+                                                        <li class="page-item" id="next-page">
+                                                            <a class="page-link" href="#"></a>
+                                                        </li>
+                                                    </ul>
+                                                </nav> 
+                                            <?php else: ?>
+                                                Нет данных
+                                            <?php endif ?>  
                                         </div>
                                         <div class="tab-pane fade" id="v-pills-olympiad" role="tabpanel" aria-labelledby="v-pills-olympiad-tab">
-                                            <!-- Update study info form -->
-                                            <div class="d-flex flex-wrap profile-input mb-3 justify-content-between">
-                                                <span class="text-primary fw-bold fs-5">Добавить олимпиадную деятельность</span><p>* - обязательные поля</p>
-                                            </div>
-                                            <form id="create-olympiad-activity" method="POST" class="profile-input-group">
-
                                             
+                                            <div class="d-flex flex-wrap profile-input mb-3 justify-content-between">
+                                                <span class="text-primary fw-bold fs-5">Олимпиадная деятельность пользователя<br><span class="text-dark"><?php echo $user_data['first_name']?> <?php echo $user_data['last_name']?></span></span>
+                                            </div>
+                                            <?php if(!empty($OlympiadActivityService->getAll($user_data['id']))):?>
+                                                <div class="row blog-posts">
+                                                <?php foreach($OlympiadActivityService->getAll($user_data['id']) as $activity):?>
+                                                        <div class="col-lg-6 blog-post mt-4">
+                                                            
+                                                        <div class="blog-post-image w-100 mb-3">
+                                                            <img src="<?php echo (!empty($activity['image'])) ? $activity['image'] : '/assets/img/placeholder.jpg'; ?>" alt="blog-post-image">
+                                                        </div>
 
-                                               <div class="row olympiad_activity_type">
-                                                    <div class="col-lg-6 profile-input mb-3">
-                                                        
-                                                        <label class="form-label">Выберите тип олимпиады *</label>
-                                                
-                                                        <select class="form-select" id="olympiad_type">
-                                                        <option value="international">Международная (5 баллов)</option>
-                                                        <option value="russian">Всероссийская (3 балла)</option>
-                                                        <option value="regional">Региональная (1 балл)</option>
-                                                        </select>
-                                                    </div>
+                                                            <small class="blog-post-info text-muted"><?php echo $OlympiadActivityService->generateActivityString($activity['activity_category'], '', '', $activity['year'])?></small>
+
+                                                            <h6 class="blog-post-title mt-3"><?php echo $activity['title']?></h6>
+
+                                                            <p class="blog-post-preview-text mt-3"><?php echo $activity['preview_text']?></p>
+
+                                                            <?php if(!empty($activity['link'])): ?>
+                                                                <a href="<?php echo $activity['link'] ?>" class="text-primary blog-post-link me-3">Ссылка <i class="fa-solid fa-up-right-from-square ms-2"></i></a>
+
+                                                            <?php endif ?>
+                                                            <?php if($user_data['id'] === $_SESSION['user']['id']):?>
+                                                                    <a href="rating-controller.php?delete_activity_id=<?php echo $activity['activity_id']?>&delete_activity_table_name=olympiad_activity&user_id=<?php echo $user_data['id']?>" class="btn btn-sm btn-outline-danger">Удалить</a>
+                                                                    <a href="update-olympiad-activity?id=<?php echo $activity['activity_id']?>" class="btn btn-sm btn-outline-success ms-2">Изменить</a>
+                                                            <?php endif ?>
+                                                        </div>
+                                                <?php endforeach;?>
                                                 </div>
-                                               <!-- НЕ ЗНАЧАЩИЕ ПОЛЯ -->
-                                               <div class="profile-input mb-3">
-                                                   
-                                                   <label class="form-label">Год *</label>
-                                                
-                                                <div class="col-lg-2">
-                                                <input type="text" id="olympiad-year-input" class="form-control"  aria-describedby="emailHelp" required value="">
-                                                </div>
-                                               </div>
-                                               <div class="profile-input mb-3">
-                                                   
-                                                   <label class="form-label">Полное название *</label>
-                                                
-                                                   
-                                                   <input type="text" id="olympiad-title-input" class="form-control"  aria-describedby="emailHelp" required value="">
-                                                   
-                                                   
-                                           
-                                               </div>
-                                               <div class="profile-input mb-3">
-                                                   
-                                                   <label class="form-label">Краткое описание</label>
-                                                
-                                                   
-                                                   <textarea id="olympiad-description-input" class="form-control"  aria-describedby="emailHelp" value="
-                                                    "></textarea>
-                                                   
-                                           
-                                               </div>
-                                               <div class="profile-input mb-3">
-                                                   
-                                                   <label class="form-label">Ссылка (необязательно)</label>
-                                                
-                                                   
-                                                   <input type="text" id="olympiad-link-input" class="form-control"  aria-describedby="emailHelp" value="">
-                                                   
-                                                   
-                                           
-                                               </div>
-                                                <div class="row">
-                                                    <div class="col-lg-4">
-                                                        <button type="submit" class="btn btn-primary w-100">Сохранить</button>
-                                                    </div>
-                                                    <div class="col-lg-4">
-                                                        <a href="/dashboard" class="btn btn-outline-primary">Вернуться назад</a>
-                                                    </div>
-                                                </div>
-                                                <!-- еуые -->
-                                            </form>  
+                                                <nav>
+                                                    <ul class="pagination justify-content-center mt-5" id="olympiad-pagination">
+                                                        <!-- Кнопка "Previous" -->
+                                                        <li class="page-item disabled" id="prev-page">
+                                                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true"></a>
+                                                        </li>
+                                                        <!-- Номера страниц будут добавлены здесь динамически -->
+                                                        <!-- Кнопка "Next" -->
+                                                        <li class="page-item" id="next-page">
+                                                            <a class="page-link" href="#"></a>
+                                                        </li>
+                                                    </ul>
+                                                </nav>
+                                            <?php else: ?>
+                                                Нет данных
+                                            <?php endif ?>  
                                         </div>
                                         <div class="tab-pane fade" id="v-pills-sports" role="tabpanel" aria-labelledby="v-pills-sports-tab">
-                                            <!-- Update study info form -->
+                                           
                                             <div class="d-flex flex-wrap profile-input mb-3 justify-content-between">
-                                                <span class="text-primary fw-bold fs-5">Добавить спортивную деятельность</span><p>* - обязательные поля</p>
+                                                <span class="text-primary fw-bold fs-5">Спортивная деятельность пользователя<br><span class="text-dark"><?php echo $user_data['first_name']?> <?php echo $user_data['last_name']?></span></span>
                                             </div>
-                                            <form id="create-sports-activity" method="POST" class="profile-input-group">
+                                            <?php if(!empty($SportsActivityService->getAll($user_data['id']))):?>
+                                                <div class="row blog-posts">
+                                                <?php foreach($SportsActivityService->getAll($user_data['id']) as $activity):?>
+                                                        <div class="col-lg-6 blog-post mt-4">
+                                                            <div class="blog-post-image w-100 mb-3">
+                                                                <img src="<?php echo (!empty($activity['image'])) ? $activity['image'] : '/assets/img/placeholder.jpg'; ?>" alt="blog-post-image">
+                                                            </div>
+                                                            <small class="blog-post-info text-muted"><?php echo $SportsActivityService->generateActivityString($activity['activity_category'], '', '', $activity['year'])?></small>
+                                                            <h6 class="blog-post-title mt-3"><?php echo $activity['title']?></h6>
+                                                            <p class="blog-post-preview-text mt-3"><?php echo $activity['preview_text']?></p>
+                                                            <?php if(!empty($activity['link'])): ?>
+                                                                <a href="<?php echo $activity['link'] ?>" class="text-primary blog-post-link me-3">Ссылка <i class="fa-solid fa-up-right-from-square ms-2"></i></a>
 
-                                            
-
-                                               <div class="row sports_activity_type">
-                                                    <div class="col-lg-6 profile-input mb-3">
-                                                        
-                                                        <label class="form-label">Выберите тип соревнования *</label>
-                                                
-                                                        <select class="form-select" id="sports_type">
-                                                        <option value="international">Международные (5 баллов)</option>
-                                                        <option value="russian">Всероссийские (3 балла)</option>
-                                                        <option value="regional">Региональные (1 балл)</option>
-                                                        <option value="gto">Значок ГТО (1 балл)</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                               <!-- НЕ ЗНАЧАЩИЕ ПОЛЯ -->
-                                               <div class="profile-input mb-3">
-                                                   
-                                                   <label class="form-label">Год *</label>
-                                                
-                                                <div class="col-lg-2">
-                                                <input type="text" id="sports-year-input" class="form-control"  aria-describedby="emailHelp" required value="">
-                                                </div>
-                                               </div>
-                                               <div class="profile-input mb-3">
-                                                   
-                                                   <label class="form-label">Полное название *</label>
-                                                
-                                                   
-                                                   <input type="text" id="sports-title-input" class="form-control"  aria-describedby="emailHelp" required value="">
-                                                   
-                                                   
-                                           
-                                               </div>
-                                               <div class="profile-input mb-3">
-                                                   
-                                                   <label class="form-label">Краткое описание</label>
-                                                
-                                                   
-                                                   <textarea id="sports-description-input" class="form-control"  aria-describedby="emailHelp" value="
-                                                    "></textarea>
-                                                   
-                                           
-                                               </div>
-                                               <div class="profile-input mb-3">
-                                                   
-                                                   <label class="form-label">Ссылка (необязательно)</label>
-                                                
-                                                   
-                                                   <input type="text" id="sports-link-input" class="form-control"  aria-describedby="emailHelp" value="">
-                                                   
-                                                   
-                                           
-                                               </div>
-                                                <div class="row">
-                                                    <div class="col-lg-4">
-                                                        <button type="submit" class="btn btn-primary w-100">Сохранить</button>
-                                                    </div>
-                                                    <div class="col-lg-4">
-                                                        <a href="/dashboard" class="btn btn-outline-primary">Вернуться назад</a>
-                                                    </div>
-                                                </div>
-                                                <!-- еуые -->
-                                            </form>                       
+                                                            <?php endif ?>                                                            
+                                                            <?php if($user_data['id'] === $_SESSION['user']['id']):?>
+                                                                    <a href="rating-controller.php?delete_activity_id=<?php echo $activity['activity_id']?>&delete_activity_table_name=sports_activity&user_id=<?php echo $user_data['id']?>" class="btn btn-sm btn-outline-danger">Удалить</a>
+                                                                    <a href="update-sports-activity?id=<?php echo $activity['activity_id']?>" class="btn btn-sm btn-outline-success ms-2">Изменить</a>
+                                                            <?php endif ?>
+                                                        </div>
+                                                <?php endforeach;?>   
+                                                </div>  
+                                                <nav>
+                                                    <ul class="pagination justify-content-center mt-5" id="sports-pagination">
+                                                        <!-- Кнопка "Previous" -->
+                                                        <li class="page-item disabled" id="prev-page">
+                                                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true"></a>
+                                                        </li>
+                                                        <!-- Номера страниц будут добавлены здесь динамически -->
+                                                        <!-- Кнопка "Next" -->
+                                                        <li class="page-item" id="next-page">
+                                                            <a class="page-link" href="#"></a>
+                                                        </li>
+                                                    </ul>
+                                                </nav>  
+                                            <?php else: ?>
+                                                Нет данных
+                                            <?php endif ?>               
                                         </div>
                                         <div class="tab-pane fade" id="v-pills-social" role="tabpanel" aria-labelledby="v-pills-social-tab">
-                                        <div class="d-flex flex-wrap profile-input mb-3 justify-content-between">
-                                                <span class="text-primary fw-bold fs-5">Добавить общественную деятельность</span><p>* - обязательные поля</p>
+                                            <div class="d-flex flex-wrap profile-input mb-3 justify-content-between">
+                                                <span class="text-primary fw-bold fs-5">Общественная деятельность пользователя<br><span class="text-dark"><?php echo $user_data['first_name']?> <?php echo $user_data['last_name']?></span></span>
                                             </div>
-                                            <form id="create-social-activity" method="POST" class="profile-input-group">
+                                            <?php if(!empty($SocialActivityService->getAll($user_data['id']))):?>
+                                                <div class="row blog-posts">
+                                                    <?php foreach($SocialActivityService->getAll($user_data['id']) as $activity):?>
+                                                            <div class="col-lg-6 blog-post mt-4">
+                                                            
+                                                                <div class="blog-post-image w-100 mb-3">
+                                                                    <img src="<?php echo (!empty($activity['image'])) ? $activity['image'] : '/assets/img/placeholder.jpg'; ?>" alt="blog-post-image">
+                                                                </div>
+                                                                <small class="blog-post-info text-muted"><?php echo $SocialActivityService->generateActivityString($activity['activity_category'], $activity['activity_type'], '', $activity['year'])?></small>
+                                                                <h6 class="blog-post-title mt-3"><?php echo $activity['title']?></h6>
+                                                                <p class="blog-post-preview-text mt-3"><?php echo $activity['preview_text']?></p>
+                                                                <?php if(!empty($activity['link'])): ?>
+                                                                    <a href="<?php echo $activity['link'] ?>" class="text-primary blog-post-link  me-3">Ссылка <i class="fa-solid fa-up-right-from-square ms-2"></i></a>
 
-                                               <div class="row">
-                                                    <div class="col-lg-8 profile-input mb-3">                                       
-                                                        <label class="form-label">Выберите тип деятельности *</label>                                        
-                                                        <select class="form-select"  id="social_activity_category">
-                                                            <option value="in_fond">В Фонде</option>
-                                                            <option value="not_only_in_fond">В Фонде и не только</option>
-                                                         
-                                                        </select>
-                                                    </div>
-                                                    
-                                               </div>
-
-                                               <div class="row social_activity_type">
-                                                    
-                                               </div>
-                                               <!-- НЕ ЗНАЧАЩИЕ ПОЛЯ -->
-                                               <div class="profile-input mb-3">
-                                                   
-                                                   <label class="form-label">Год *</label>
-                                                
-                                                <div class="col-lg-2">
-                                                <input type="text" id="social-year-input" class="form-control"  aria-describedby="emailHelp" required value="">
-                                                </div>
-                                               </div>
-                                               <div class="profile-input mb-3">
-                                                   
-                                                   <label class="form-label">Полное название *</label>
-                                                
-                                                   
-                                                   <input type="text" id="social-title-input" class="form-control"  aria-describedby="emailHelp" required value="">
-                                                   
-                                                   
-                                           
-                                               </div>
-                                               <div class="profile-input mb-3">
-                                                   
-                                                   <label class="form-label">Краткое описание</label>
-                                                
-                                                   
-                                                   <textarea id="social-description-input" class="form-control"  aria-describedby="emailHelp" required value="
-                                                    "></textarea>
-                                                   
-                                           
-                                               </div>
-                                               <div class="profile-input mb-3">
-                                                   
-                                                   <label class="form-label">Ссылка (необязательно)</label>
-                                                
-                                                   
-                                                   <input type="text" id="social-link-input" class="form-control"  aria-describedby="emailHelp" value="">
-                                                   
-                                                   
-                                           
-                                               </div>
-                                                <div class="row">
-                                                    <div class="col-lg-4">
-                                                        <button type="submit" class="btn btn-primary w-100">Сохранить</button>
-                                                    </div>
-                                                    <div class="col-lg-4">
-                                                        <a href="/dashboard" class="btn btn-outline-primary">Вернуться назад</a>
-                                                    </div>
-                                                </div>
-                                                <!-- еуые -->
-                                            </form>   
-
-
-
-
-
-
-
-                                            
+                                                                <?php endif ?>                                                               
+                                                                <?php if($user_data['id'] === $_SESSION['user']['id']):?>
+                                                                    <a href="rating-controller.php?delete_activity_id=<?php echo $activity['activity_id']?>&delete_activity_table_name=social_activity&user_id=<?php echo $user_data['id']?>" class="btn btn-sm btn-outline-danger">Удалить</a>
+                                                                    <a href="update-social-activity?id=<?php echo $activity['activity_id']?>" class="btn btn-sm btn-outline-success ms-2">Изменить</a>
+                                                                <?php endif ?>
+                                                            </div>
+                                                    <?php endforeach;?> 
+                                                </div>   
+                                                <nav>
+                                                    <ul class="pagination justify-content-center mt-5" id="social-pagination">
+                                                        <!-- Кнопка "Previous" -->
+                                                        <li class="page-item disabled" id="prev-page">
+                                                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true"></a>
+                                                        </li>
+                                                        <!-- Номера страниц будут добавлены здесь динамически -->
+                                                        <!-- Кнопка "Next" -->
+                                                        <li class="page-item" id="next-page">
+                                                            <a class="page-link" href="#"></a>
+                                                        </li>
+                                                    </ul>
+                                                </nav> 
+                                            <?php else: ?>
+                                                Нет данных
+                                            <?php endif ?>
                                         </div>   
                                         <div class="tab-pane fade" id="v-pills-educational" role="tabpanel" aria-labelledby="v-pills-educational-tab">
-                                        <div class="d-flex flex-wrap profile-input mb-3 justify-content-between">
-                                                <span class="text-primary fw-bold fs-5">Добавить просветительскую деятельность</span><p>* - обязательные поля</p>
+                                            <div class="d-flex flex-wrap profile-input mb-3 justify-content-between">
+                                                <span class="text-primary fw-bold fs-5">Просветительская деятельность пользователя<br><span class="text-dark"><?php echo $user_data['first_name']?> <?php echo $user_data['last_name']?></span></span>
                                             </div>
-                                            <form id="create-educational-activity" method="POST" class="profile-input-group">
-
-                                            
-
-                                               <div class="row educational_activity_type">
-                                                    <div class="col-lg-8 profile-input mb-3">
-                                                        
-                                                        <label class="form-label">Выберите тип деятельности*</label>
-                                                
-                                                        <select class="form-select" id="educational_type">
-                                                        <option value="international">Спикер на Международных мероприятиях (5 баллов)</option>
-                                                        <option value="russian">Спикер на Всероссийских мероприятиях (3 балла)</option>
-                                                        <option value="regional">Спикер на Региональных мероприятиях (1 балл)</option>
-                                                      
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                               <!-- НЕ ЗНАЧАЩИЕ ПОЛЯ -->
-                                               <div class="profile-input mb-3">
-                                                   
-                                                   <label class="form-label">Год *</label>
-                                                
-                                                <div class="col-lg-2">
-                                                <input type="text" id="educational-year-input" class="form-control"  aria-describedby="emailHelp" required value="">
-                                                </div>
-                                               </div>
-                                               <div class="profile-input mb-3">
-                                                   
-                                                   <label class="form-label">Полное название *</label>
-                                                
-                                                   
-                                                   <input type="text" id="educational-title-input" class="form-control"  aria-describedby="emailHelp" required value="">
-                                                   
-                                                   
-                                           
-                                               </div>
-                                               <div class="profile-input mb-3">
-                                                   
-                                                   <label class="form-label">Краткое описание</label>
-                                                
-                                                   
-                                                   <textarea id="educational-description-input" class="form-control"  aria-describedby="emailHelp" value="
-                                                    "></textarea>
-                                                   
-                                           
-                                               </div>
-                                               <div class="profile-input mb-3">
-                                                   
-                                                   <label class="form-label">Ссылка (необязательно)</label>
-                                                
-                                                   
-                                                   <input type="text" id="educational-link-input" class="form-control"  aria-describedby="emailHelp" value="">
-                                                   
-                                                   
-                                           
-                                               </div>
-                                                <div class="row">
-                                                    <div class="col-lg-4">
-                                                        <button type="submit" class="btn btn-primary w-100">Сохранить</button>
-                                                    </div>
-                                                    <div class="col-lg-4">
-                                                        <a href="/dashboard" class="btn btn-outline-primary">Вернуться назад</a>
-                                                    </div>
-                                                </div>
-                                                <!-- еуые -->
-                                            </form>  
+                                            <?php if(!empty($EducationalActivityService->getAll($user_data['id']))):?>
+                                                <div class="row blog-posts">
+                                                    <?php foreach($EducationalActivityService->getAll($user_data['id']) as $activity):?>
+                                                            <div class="col-lg-6 blog-post mt-4">
+                                                            <div class="blog-post-image w-100 mb-3">
+                                                                <img src="<?php echo (!empty($activity['image'])) ? $activity['image'] : '/assets/img/placeholder.jpg'; ?>" alt="blog-post-image">
+                                                            </div>
+                                                                <small class="blog-post-info text-muted"><?php echo $EducationalActivityService->generateActivityString($activity['activity_category'], '', '', $activity['year'])?></small>
+                                                                <h6 class="blog-post-title mt-3"><?php echo $activity['title']?></h6>
+                                                                <p class="blog-post-preview-text mt-3"><?php echo $activity['preview_text']?></p>
+                                                                <?php if(!empty($activity['link'])): ?>
+                                                                    <a href="<?php echo $activity['link'] ?>" class="text-primary blog-post-link">Ссылка <i class="fa-solid fa-up-right-from-square ms-2"></i></a>
+                                                                <?php endif ?>                                                                
+                                                                <?php if($user_data['id'] === $_SESSION['user']['id']):?>
+                                                                    <a href="rating-controller.php?delete_activity_id=<?php echo $activity['activity_id']?>&delete_activity_table_name=educational_activity&user_id=<?php echo $user_data['id']?>" class="btn btn-sm btn-outline-danger ms-3">Удалить</a>
+                                                                    <a href="update-educational-activity?id=<?php echo $activity['activity_id']?>" class="btn btn-sm btn-outline-success ms-2">Изменить</a>
+                                                                <?php endif ?>
+                                                            </div>
+                                                    <?php endforeach;?> 
+                                                </div>  
+                                                <nav>
+                                                    <ul class="pagination justify-content-center mt-5" id="educational-pagination">
+                                                        <!-- Кнопка "Previous" -->
+                                                        <li class="page-item disabled" id="prev-page">
+                                                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true"></a>
+                                                        </li>
+                                                        <!-- Номера страниц будут добавлены здесь динамически -->
+                                                        <!-- Кнопка "Next" -->
+                                                        <li class="page-item" id="next-page">
+                                                            <a class="page-link" href="#"></a>
+                                                        </li>
+                                                    </ul>
+                                                </nav> 
+                                            <?php else: ?>
+                                                Нет данных
+                                            <?php endif ?>
                                         </div>  
                                         <div class="tab-pane fade" id="v-pills-volunteer" role="tabpanel" aria-labelledby="v-pills-volunteer-tab">
-                                        <div class="d-flex flex-wrap profile-input mb-3 justify-content-between">
-                                                <span class="text-primary fw-bold fs-5">Добавить волонтёрскую деятельность</span><p>* - обязательные поля</p>
+                                            <div class="d-flex flex-wrap profile-input mb-3 justify-content-between">
+                                                <span class="text-primary fw-bold fs-5">Волонтёрская деятельность пользователя<br><span class="text-dark"><?php echo $user_data['first_name']?> <?php echo $user_data['last_name']?></span></span>
                                             </div>
-                                            <form id="create-volunteer-activity" method="POST" class="profile-input-group">
-                                               <div class="row volunteer_activity_type">
-                                                    <div class="col-lg-10 profile-input mb-3">
-                                                        
-                                                        <label class="form-label">Выберите тип деятельности*</label>
-                                                
-                                                        <select class="form-select" id="volunteer_type">
-                                                        <option value="international">Организатор Международных и Всероссийских волонтерских мероприятий (5 баллов)</option>
-                                                        <option value="russian">Организатор Региональных волонтерских мероприятий (3 балла)</option>
-                                                        <option value="regional">Организатор Университетских волонтерских мероприятий (1 балл)</option>
-                                                      
-                                                       
-                                                        <option value="participant">Участник волонтерских мероприятий (1 балл)</option>
-                                                      
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                               <!-- НЕ ЗНАЧАЩИЕ ПОЛЯ -->
-                                               <div class="profile-input mb-3">
-                                                   
-                                                   <label class="form-label">Год *</label>
-                                                
-                                                <div class="col-lg-2">
-                                                <input type="text" id="volunteer-year-input" class="form-control"  aria-describedby="emailHelp" required value="">
-                                                </div>
-                                               </div>
-                                               <div class="profile-input mb-3">
-                                                   
-                                                   <label class="form-label">Полное название *</label>
-                                                
-                                                   
-                                                   <input type="text" id="volunteer-title-input" class="form-control"  aria-describedby="emailHelp" required value="">
-                                                   
-                                                   
-                                           
-                                               </div>
-                                               <div class="profile-input mb-3">
-                                                   
-                                                   <label class="form-label">Краткое описание</label>
-                                                
-                                                   
-                                                   <textarea id="volunteer-description-input" class="form-control"  aria-describedby="emailHelp" value="
-                                                    "></textarea>
-                                                   
-                                           
-                                               </div>
-                                               <div class="profile-input mb-3">
-                                                   
-                                                   <label class="form-label">Ссылка (необязательно)</label>
-                                                
-                                                   
-                                                   <input type="text" id="volunteer-link-input" class="form-control"  aria-describedby="emailHelp" value="">
-                                                   
-                                                   
-                                           
-                                               </div>
-                                                <div class="row">
-                                                    <div class="col-lg-4">
-                                                        <button type="submit" class="btn btn-primary w-100">Сохранить</button>
-                                                    </div>
-                                                    <div class="col-lg-4">
-                                                        <a href="/dashboard" class="btn btn-outline-primary">Вернуться назад</a>
-                                                    </div>
-                                                </div>
-                                                <!-- еуые -->
-                                            </form>  
+                                            <?php if(!empty($VolunteerActivityService->getAll($user_data['id']))):?>
+                                                <div class="row blog-posts">
+                                                    <?php foreach($VolunteerActivityService->getAll($user_data['id']) as $activity):?>
+                                                            <div class="col-lg-6 blog-post mt-4">
+                                                            <div class="blog-post-image w-100 mb-3">
+                                                            <img src="<?php echo (!empty($activity['image'])) ? $activity['image'] : '/assets/img/placeholder.jpg'; ?>" alt="blog-post-image">
+                                                        </div>
+                                                                <small class="blog-post-info text-muted"><?php echo $VolunteerActivityService->generateActivityString($activity['activity_category'], '', '', $activity['year'])?></small>
+                                                                <h6 class="blog-post-title mt-3"><?php echo $activity['title']?></h6>
+                                                                <p class="blog-post-preview-text mt-3"><?php echo $activity['preview_text']?></p>
+                                                                <?php if(!empty($activity['link'])): ?>
+                                                                    <a href="<?php echo $activity['link'] ?>" class="text-primary blog-post-link me-3">Ссылка <i class="fa-solid fa-up-right-from-square ms-2"></i></a>
+                                                                <?php endif ?>                                                                
+                                                                <?php if($user_data['id'] === $_SESSION['user']['id']):?>
+                                                                    <a href="rating-controller.php?delete_activity_id=<?php echo $activity['activity_id']?>&delete_activity_table_name=volunteer_activity&user_id=<?php echo $user_data['id']?>" class="btn btn-sm btn-outline-danger">Удалить</a>
+                                                                    <a href="update-volunteer-activity?id=<?php echo $activity['activity_id']?>" class="btn btn-sm btn-outline-success ms-2">Изменить</a>
+                                                                <?php endif ?>
+                                                            </div>
+                                                    <?php endforeach;?> 
+                                                </div> 
+                                                <nav>
+                                                    <ul class="pagination justify-content-center mt-5" id="volunteer-pagination">
+                                                        <!-- Кнопка "Previous" -->
+                                                        <li class="page-item disabled" id="prev-page">
+                                                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true"></a>
+                                                        </li>
+                                                        <!-- Номера страниц будут добавлены здесь динамически -->
+                                                        <!-- Кнопка "Next" -->
+                                                        <li class="page-item" id="next-page">
+                                                            <a class="page-link" href="#"></a>
+                                                        </li>
+                                                    </ul>
+                                                </nav> 
+                                            <?php else: ?>
+                                                Нет данных
+                                            <?php endif ?>
                                         </div> 
                                         <div class="tab-pane fade" id="v-pills-internship" role="tabpanel" aria-labelledby="v-pills-internship-tab">
-                                        <div class="d-flex flex-wrap profile-input mb-3 justify-content-between">
-                                                <span class="text-primary fw-bold fs-5">Добавить практики и стажировки</span><p>* - обязательные поля</p>
+                                            <div class="d-flex flex-wrap profile-input mb-3 justify-content-between">
+                                                <span class="text-primary fw-bold fs-5">Практики и стажировки пользователя<br><span class="text-dark"><?php echo $user_data['first_name']?> <?php echo $user_data['last_name']?></span></span>
                                             </div>
-                                            <form id="create-internship-activity" method="POST" class="profile-input-group">
-                                               <div class="row internship_activity_type">
-                                                    <div class="col-lg-10 profile-input mb-3">
-                                                        
-                                                        <label class="form-label">Выберите тип практики или стажировки*</label>
-                                                
-                                                        <select class="form-select" id="internship_type">
-                                                            <option value="international">Международная  (5 баллов)</option>
-                                                            <option value="russian">Всероссийская (3 балла)</option>
-                                                            <option value="regional">Региональная (1 балл)</option>
-                                                        
-                                                      
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                               <!-- НЕ ЗНАЧАЩИЕ ПОЛЯ -->
-                                               <div class="profile-input mb-3">
-                                                   
-                                                   <label class="form-label">Год *</label>
-                                                
-                                                <div class="col-lg-2">
-                                                <input type="text" id="internship-year-input" class="form-control"  aria-describedby="emailHelp" required value="">
-                                                </div>
-                                               </div>
-                                               <div class="profile-input mb-3">
-                                                   
-                                                   <label class="form-label">Полное название *</label>
-                                                
-                                                   
-                                                   <input type="text" id="internship-title-input" class="form-control"  aria-describedby="emailHelp" required value="">
-                                                   
-                                                   
                                            
-                                               </div>
-                                               <div class="profile-input mb-3">
-                                                   
-                                                   <label class="form-label">Краткое описание</label>
-                                                
-                                                   
-                                                   <textarea id="internship-description-input" class="form-control"  aria-describedby="emailHelp" value="
-                                                    "></textarea>
-                                                   
-                                           
-                                               </div>
-                                               <div class="profile-input mb-3">
-                                                   
-                                                   <label class="form-label">Ссылка (необязательно)</label>
-                                                
-                                                   
-                                                   <input type="text" id="internship-link-input" class="form-control"  aria-describedby="emailHelp" value="">
-                                                   
-                                                   
-                                           
-                                               </div>
-                                                <div class="row">
-                                                    <div class="col-lg-4">
-                                                        <button type="submit" class="btn btn-primary w-100">Сохранить</button>
-                                                    </div>
-                                                    <div class="col-lg-4">
-                                                        <a href="/dashboard" class="btn btn-outline-primary">Вернуться назад</a>
-                                                    </div>
-                                                </div>
-                                                <!-- еуые -->
-                                            </form>  
+                                            <?php if(!empty($InternshipActivityService->getAll($user_data['id']))): ?>
+                                                <div class="row blog-posts">
+                                                    <?php foreach($InternshipActivityService->getAll($user_data['id']) as $activity):?>
+                                                            <div class="col-lg-6 blog-post mt-4">
+                                                                <div class="blog-post-image w-100 mb-3">
+                                                                    <img src="<?php echo (!empty($activity['image'])) ? $activity['image'] : '/assets/img/placeholder.jpg'; ?>" alt="blog-post-image">
+                                                                </div>
+                                                                <small class="blog-post-info text-muted"><?php echo $InternshipActivityService->generateActivityString($activity['activity_category'], '', '', $activity['year'])?></small>
+                                                                <h6 class="blog-post-title mt-3"><?php echo $activity['title']?></h6>
+                                                                <p class="blog-post-preview-text mt-3"><?php echo $activity['preview_text']?></p>
+                                                                <?php if(!empty($activity['link'])): ?>
+                                                                    <a href="<?php echo $activity['link'] ?>" class="text-primary blog-post-link me-3">Ссылка <i class="fa-solid fa-up-right-from-square ms-2"></i></a>
+                                                                <?php endif ?>                                                                
+                                                                <?php if($user_data['id'] === $_SESSION['user']['id']):?>
+                                                                    <a href="rating-controller.php?delete_activity_id=<?php echo $activity['activity_id']?>&delete_activity_table_name=internship_activity&user_id=<?php echo $user_data['id']?>" class="btn btn-sm btn-outline-danger">Удалить</a>
+                                                                    <a href="update-internship-activity?id=<?php echo $activity['activity_id']?>" class="btn btn-sm btn-outline-success ms-2">Изменить</a>
+                                                                <?php endif ?>
+                                                            </div>
+                                                    <?php endforeach;?> 
+                                                </div>    
+                                                <nav>
+                                                    <ul class="pagination justify-content-center mt-5" id="internship-pagination">
+                                                        <!-- Кнопка "Previous" -->
+                                                        <li class="page-item disabled" id="prev-page">
+                                                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true"></a>
+                                                        </li>
+                                                        <!-- Номера страниц будут добавлены здесь динамически -->
+                                                        <!-- Кнопка "Next" -->
+                                                        <li class="page-item" id="next-page">
+                                                            <a class="page-link" href="#"></a>
+                                                        </li>
+                                                    </ul>
+                                                </nav> 
+                                            <?php else :?>
+                                                Нет данных
+                                            <?php endif ?>
                                         </div>
                                     </div>
                                 </div>
@@ -626,6 +395,120 @@ if(isset($_GET['id']) && is_numeric($_GET['id']) && $UserService->getUserById($_
         </div>
     </div>
 </div>
+
+<script>
+
+function initPagination(tab_id, pagination_list_id){
+    const blogPosts = document.querySelectorAll(`#${tab_id} .blog-post`); // Получаем все элементы блог-постов
+    const itemsPerPage = 4; // Количество блог-постов на одной странице
+    let currentPage = 1;
+
+    function showPage(page) {
+        const startIndex = (page - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+
+        blogPosts.forEach((post, index) => {
+            if (index >= startIndex && index < endIndex) {
+                post.style.display = 'block'; // Показываем блог-посты для текущей страницы
+            } else {
+                post.style.display = 'none'; // Скрываем блог-посты для других страниц
+            }
+        });
+    }
+
+    function updatePagination() {
+        const totalPages = Math.ceil(blogPosts.length / itemsPerPage);
+        const paginationContainer = document.getElementById(pagination_list_id) ? document.getElementById(pagination_list_id) : document.createElement('div');
+        paginationContainer.innerHTML = ''; // Очищаем контейнер пагинации
+
+        // Кнопка "Previous"
+        const prevPageButton = document.createElement('li');
+        prevPageButton.classList.add('page-item');
+        if (currentPage === 1) {
+            prevPageButton.classList.add('disabled');
+        }
+        const prevPageLink = document.createElement('button');
+        prevPageLink.classList.add('page-link');
+       
+        prevPageLink.innerHTML = '<i class="fa-solid fa-angle-left"></i>';
+        prevPageButton.appendChild(prevPageLink);
+
+        // Обработчик клика на кнопке "Previous"
+        prevPageLink.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                showPage(currentPage);
+                updatePagination();
+            }
+        });
+
+        paginationContainer.appendChild(prevPageButton);
+
+        // Номера страниц
+        for (let page = 1; page <= totalPages; page++) {
+            const pageButton = document.createElement('li');
+            pageButton.classList.add('page-item');
+            if (page === currentPage) {
+                pageButton.classList.add('active');
+            }
+            const pageLink = document.createElement('button');
+            pageLink.classList.add('page-link');
+            
+            pageLink.innerHTML = page;
+            pageButton.appendChild(pageLink);
+
+            // Обработчик клика на номере страницы
+            pageLink.addEventListener('click', () => {
+                if (page !== currentPage) {
+                    currentPage = page;
+                    showPage(currentPage);
+                    updatePagination();
+                }
+            });
+
+            paginationContainer.appendChild(pageButton);
+        }
+
+        // Кнопка "Next"
+        const nextPageButton = document.createElement('li');
+        nextPageButton.classList.add('page-item');
+        if (currentPage === totalPages) {
+            nextPageButton.classList.add('disabled');
+        }
+        const nextPageLink = document.createElement('button');
+        nextPageLink.classList.add('page-link');
+        nextPageLink.innerHTML = '<i class="fa-solid fa-angle-right"></i>';
+        nextPageButton.appendChild(nextPageLink);
+
+        // Обработчик клика на кнопке "Next"
+        nextPageLink.addEventListener('click', () => {
+            if (currentPage < totalPages) {
+                currentPage++;
+                showPage(currentPage);
+                updatePagination();
+            }
+        });
+
+        paginationContainer.appendChild(nextPageButton);
+    }
+
+    // Начальная загрузка первой страницы
+    showPage(currentPage);
+    updatePagination();
+}
+
+</script>
+
+<script>
+    initPagination('v-pills-science-activity', 'science-pagination')
+    initPagination('v-pills-scholarship', 'scholarship-pagination')
+    initPagination('v-pills-olympiad', 'olympiad-pagination')
+    initPagination('v-pills-sports', 'sports-pagination')
+    initPagination('v-pills-social', 'social-pagination')
+    initPagination('v-pills-educational', 'educational-pagination')
+    initPagination('v-pills-volunteer', 'volunteer-pagination')
+    initPagination('v-pills-internship', 'internship-pagination')
+</script>
 
 <script>
 

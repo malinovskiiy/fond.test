@@ -4,7 +4,6 @@ require "header.php";
 if(!isset($_SESSION['user'])){
 	header("Location: 404.php");
 }
-
 ?>
 
 <div class="page-wrapper position-relative py-5">
@@ -22,8 +21,9 @@ if(!isset($_SESSION['user'])){
                                             <div class="d-flex flex-wrap profile-input mb-3 justify-content-between">
                                                 <span class="text-primary fw-bold fs-5">Добавить научную деятельность</span><p>* - обязательные поля</p>
                                             </div>
-                                            <form id="create-scientific-activity" method="POST" class="profile-input-group">
+                                            <form id="create-scientific-activity" method="POST" class="profile-input-group" enctype="multipart/form-data">
 
+                                               <input type="hidden" name="create_scientific_activity" value="true">
                                                <div class="row">
                                                     <div class="col-lg-6 profile-input mb-3">                                       
                                                         <label class="form-label">Выберите категорию *</label>                                        
@@ -46,7 +46,7 @@ if(!isset($_SESSION['user'])){
                                                    <label class="form-label">Год *</label>
                                                 
                                                 <div class="col-lg-2">
-                                                <input type="text" id="science-year-input" class="form-control"  aria-describedby="emailHelp" required value="">
+                                                    <input  type="number" max="9999" min="0" type="text" id="science-year-input" name="science-year-input" class="form-control"  aria-describedby="emailHelp" required>
                                                 </div>
                                                </div>
                                                <div class="profile-input mb-3">
@@ -54,18 +54,15 @@ if(!isset($_SESSION['user'])){
                                                    <label class="form-label">Полное название *</label>
                                                 
                                                    
-                                                   <input type="text" id="science-title-input" class="form-control"  aria-describedby="emailHelp" required value="">
+                                                   <input type="text" id="science-title-input" name="science-title-input" class="form-control"  aria-describedby="emailHelp" required>
                                                    
-                                                   
-                                           
                                                </div>
                                                <div class="profile-input mb-3">
                                                    
-                                                   <label class="form-label">Краткое описание *</label>
+                                                   <label class="form-label">Краткое описание (не более 300 символов)</label>
                                                 
                                                    
-                                                   <textarea id="science-description-input" class="form-control"  aria-describedby="emailHelp" required value="
-                                                    "></textarea>
+                                                   <textarea maxlength="300" id="science-description-input" name="science-description-input" class="form-control"  aria-describedby="emailHelp"></textarea>
                                                    
                                            
                                                </div>
@@ -74,19 +71,28 @@ if(!isset($_SESSION['user'])){
                                                    <label class="form-label">Ссылка (необязательно)</label>
                                                 
                                                    
-                                                   <input type="text" id="science-link-input" class="form-control"  aria-describedby="emailHelp" value="">
+                                                   <input type="text" id="science-link-input" name="science-link-input" class="form-control"  aria-describedby="emailHelp">
                                                    
                                                    
                                            
                                                </div>
-                                                <div class="row">
+                                               <div class="profile-input mb-5">
+                                                   
+                                                   <label class="form-label">Картинка (необязательно)</label>
+                                                
+                                                   <div class="col-lg-6">
+                                                    <input type="file" id="science-image-input" name="science-image-input" class="form-control"  aria-describedby="emailHelp" value="">
+
+                                                   </div>                
+                                               </div>
+                                               <div class="row">
                                                     <div class="col-lg-4">
                                                         <button type="submit" class="btn btn-primary w-100">Сохранить</button>
                                                     </div>
                                                     <div class="col-lg-4">
                                                         <a href="/dashboard" class="btn btn-outline-primary w-100 mt-3 mt-lg-0">Вернуться назад</a>
                                                     </div>
-                                                </div>
+                                               </div>
                                                 <!-- еуые -->
                                             </form>        
                                         </div>
@@ -95,19 +101,19 @@ if(!isset($_SESSION['user'])){
                                             <div class="d-flex flex-wrap profile-input mb-3 justify-content-between">
                                                 <span class="text-primary fw-bold fs-5">Добавить стипендиальное поощрение/премию</span><p>* - обязательные поля</p>
                                             </div>
-                                            <form id="create-scholarship-activity" method="POST" class="profile-input-group">
+                                            <form id="create-scholarship-activity" method="POST" class="profile-input-group" enctype="multipart/form-data">
 
                                             
-
+                                               <input type="hidden" name="create_scholarship_activity" value="true">
                                                <div class="row scholarship_activity_type">
                                                     <div class="col-lg-6 profile-input mb-3">
                                                         
                                                         <label class="form-label">Выберите тип стипендии *</label>
                                                 
-                                                        <select class="form-select" id="scholarship_type">
-                                                        <option value="international">Международная (10 баллов)</option>
-                                                        <option value="russian">Всероссийская / организованная промышленным предприятием (5 баллов)</option>
-                                                        <option value="regional">Региональная (3 балла)</option>
+                                                        <select class="form-select" id="scholarship_type" name="scholarship_type">
+                                                            <option value="international">Международная (10 баллов)</option>
+                                                            <option value="russian">Всероссийская / организованная промышленным предприятием (5 баллов)</option>
+                                                            <option value="regional">Региональная (3 балла)</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -117,7 +123,7 @@ if(!isset($_SESSION['user'])){
                                                    <label class="form-label">Год *</label>
                                                 
                                                 <div class="col-lg-2">
-                                                <input type="text" id="scholarship-year-input" class="form-control"  aria-describedby="emailHelp" required value="">
+                                                <input  type="number" max="9999" min="0" type="text" id="scholarship-year-input" name="scholarship-year-input" class="form-control"  aria-describedby="emailHelp" required value="">
                                                 </div>
                                                </div>
                                                <div class="profile-input mb-3">
@@ -125,17 +131,17 @@ if(!isset($_SESSION['user'])){
                                                    <label class="form-label">Полное название *</label>
                                                 
                                                    
-                                                   <input type="text" id="scholarship-title-input" class="form-control"  aria-describedby="emailHelp" required value="">
+                                                   <input type="text" id="scholarship-title-input" name="scholarship-title-input" class="form-control"  aria-describedby="emailHelp" required value="">
                                                    
                                                    
                                            
                                                </div>
                                                <div class="profile-input mb-3">
                                                    
-                                                   <label class="form-label">Краткое описание</label>
+                                                   <label class="form-label">Краткое описание (не более 300 символов)</label>
                                                 
                                                    
-                                                   <textarea id="scholarship-description-input" class="form-control"  aria-describedby="emailHelp" value="
+                                                   <textarea maxlength="300" id="scholarship-description-input" name="scholarship-description-input" class="form-control"  aria-describedby="emailHelp" value="
                                                     "></textarea>
                                                    
                                            
@@ -145,10 +151,19 @@ if(!isset($_SESSION['user'])){
                                                    <label class="form-label">Ссылка (необязательно)</label>
                                                 
                                                    
-                                                   <input type="text" id="scholarship-link-input" class="form-control"  aria-describedby="emailHelp" value="">
+                                                   <input type="text" id="scholarship-link-input" name="scholarship-link-input" class="form-control"  aria-describedby="emailHelp" value="">
                                                    
                                                    
                                            
+                                               </div>
+                                               <div class="profile-input mb-5">
+                                                   
+                                                   <label class="form-label">Картинка (необязательно)</label>
+                                                
+                                                   <div class="col-lg-6">
+                                                    <input type="file" id="scholarship-image-input" name="scholarship-image-input" class="form-control"  aria-describedby="emailHelp" value="">
+
+                                                   </div>                
                                                </div>
                                                 <div class="row">
                                                     <div class="col-lg-4">
@@ -166,16 +181,16 @@ if(!isset($_SESSION['user'])){
                                             <div class="d-flex flex-wrap profile-input mb-3 justify-content-between">
                                                 <span class="text-primary fw-bold fs-5">Добавить олимпиадную деятельность</span><p>* - обязательные поля</p>
                                             </div>
-                                            <form id="create-olympiad-activity" method="POST" class="profile-input-group">
+                                            <form id="create-olympiad-activity" method="POST" class="profile-input-group" enctype="multipart/form-data">
 
-                                            
+                                                <input type="hidden" name="create_olympiad_activity" value="true">
 
                                                <div class="row olympiad_activity_type">
                                                     <div class="col-lg-6 profile-input mb-3">
                                                         
                                                         <label class="form-label">Выберите тип олимпиады *</label>
                                                 
-                                                        <select class="form-select" id="olympiad_type">
+                                                        <select class="form-select" id="olympiad_type" name="olympiad_type">
                                                         <option value="international">Международная (5 баллов)</option>
                                                         <option value="russian">Всероссийская (3 балла)</option>
                                                         <option value="regional">Региональная (1 балл)</option>
@@ -188,7 +203,7 @@ if(!isset($_SESSION['user'])){
                                                    <label class="form-label">Год *</label>
                                                 
                                                 <div class="col-lg-2">
-                                                <input type="text" id="olympiad-year-input" class="form-control"  aria-describedby="emailHelp" required value="">
+                                                <input  type="number" max="9999" min="0" type="text" id="olympiad-year-input" name="olympiad-year-input" class="form-control"  aria-describedby="emailHelp" required value="">
                                                 </div>
                                                </div>
                                                <div class="profile-input mb-3">
@@ -196,17 +211,17 @@ if(!isset($_SESSION['user'])){
                                                    <label class="form-label">Полное название *</label>
                                                 
                                                    
-                                                   <input type="text" id="olympiad-title-input" class="form-control"  aria-describedby="emailHelp" required value="">
+                                                   <input type="text" id="olympiad-title-input" name="olympiad-title-input" class="form-control"  aria-describedby="emailHelp" required value="">
                                                    
                                                    
                                            
                                                </div>
                                                <div class="profile-input mb-3">
                                                    
-                                                   <label class="form-label">Краткое описание</label>
+                                                   <label class="form-label">Краткое описание (не более 300 символов)</label>
                                                 
                                                    
-                                                   <textarea id="olympiad-description-input" class="form-control"  aria-describedby="emailHelp" value="
+                                                   <textarea maxlength="300" id="olympiad-description-input" name="olympiad-description-input" class="form-control"  aria-describedby="emailHelp" value="
                                                     "></textarea>
                                                    
                                            
@@ -216,10 +231,19 @@ if(!isset($_SESSION['user'])){
                                                    <label class="form-label">Ссылка (необязательно)</label>
                                                 
                                                    
-                                                   <input type="text" id="olympiad-link-input" class="form-control"  aria-describedby="emailHelp" value="">
+                                                   <input type="text" id="olympiad-link-input" name="olympiad-link-input" class="form-control"  aria-describedby="emailHelp" value="">
                                                    
                                                    
                                            
+                                               </div>
+                                               <div class="profile-input mb-5">
+                                                   
+                                                   <label class="form-label">Картинка (необязательно)</label>
+                                                
+                                                   <div class="col-lg-6">
+                                                    <input type="file" id="olympiad-image-input" name="olympiad-image-input" class="form-control"  aria-describedby="emailHelp" value="">
+
+                                                   </div>                
                                                </div>
                                                 <div class="row">
                                                     <div class="col-lg-4">
@@ -237,16 +261,16 @@ if(!isset($_SESSION['user'])){
                                             <div class="d-flex flex-wrap profile-input mb-3 justify-content-between">
                                                 <span class="text-primary fw-bold fs-5">Добавить спортивную деятельность</span><p>* - обязательные поля</p>
                                             </div>
-                                            <form id="create-sports-activity" method="POST" class="profile-input-group">
+                                            <form id="create-sports-activity" method="POST" class="profile-input-group" enctype="multipart/form-data">
 
-                                            
-
+                                               
+                                               <input type="hidden" name="create_sports_activity" value="true">
                                                <div class="row sports_activity_type">
                                                     <div class="col-lg-6 profile-input mb-3">
                                                         
                                                         <label class="form-label">Выберите тип соревнования *</label>
                                                 
-                                                        <select class="form-select" id="sports_type">
+                                                        <select class="form-select" id="sports_type" name="sports_type">
                                                         <option value="international">Международные (5 баллов)</option>
                                                         <option value="russian">Всероссийские (3 балла)</option>
                                                         <option value="regional">Региональные (1 балл)</option>
@@ -260,38 +284,27 @@ if(!isset($_SESSION['user'])){
                                                    <label class="form-label">Год *</label>
                                                 
                                                 <div class="col-lg-2">
-                                                <input type="text" id="sports-year-input" class="form-control"  aria-describedby="emailHelp" required value="">
+                                                <input  type="number" max="9999" min="0" type="text" id="sports-year-input" name="sports-year-input" class="form-control"  aria-describedby="emailHelp" required value="">
                                                 </div>
                                                </div>
-                                               <div class="profile-input mb-3">
-                                                   
+                                               <div class="profile-input mb-3">       
                                                    <label class="form-label">Полное название *</label>
-                                                
-                                                   
-                                                   <input type="text" id="sports-title-input" class="form-control"  aria-describedby="emailHelp" required value="">
-                                                   
-                                                   
-                                           
+                                                   <input type="text" id="sports-title-input" name="sports-title-input" class="form-control"  aria-describedby="emailHelp" required value="">
                                                </div>
                                                <div class="profile-input mb-3">
-                                                   
-                                                   <label class="form-label">Краткое описание</label>
-                                                
-                                                   
-                                                   <textarea id="sports-description-input" class="form-control"  aria-describedby="emailHelp" value="
+                                                   <label class="form-label">Краткое описание (не более 300 символов)</label>
+                                                   <textarea maxlength="300" id="sports-description-input" name="sports-description-input" class="form-control"  aria-describedby="emailHelp" value="
                                                     "></textarea>
-                                                   
-                                           
                                                </div>
                                                <div class="profile-input mb-3">
-                                                   
                                                    <label class="form-label">Ссылка (необязательно)</label>
-                                                
-                                                   
-                                                   <input type="text" id="sports-link-input" class="form-control"  aria-describedby="emailHelp" value="">
-                                                   
-                                                   
-                                           
+                                                   <input type="text" id="sports-link-input" name="sports-link-input" class="form-control"  aria-describedby="emailHelp" value="">
+                                               </div>
+                                               <div class="profile-input mb-5">
+                                                   <label class="form-label">Картинка (необязательно)</label>
+                                                   <div class="col-lg-6">
+                                                    <input type="file" id="sports-image-input" name="sports-image-input" class="form-control"  aria-describedby="emailHelp" value="">
+                                                   </div>                
                                                </div>
                                                 <div class="row">
                                                     <div class="col-lg-4">
@@ -308,19 +321,21 @@ if(!isset($_SESSION['user'])){
                                         <div class="d-flex flex-wrap profile-input mb-3 justify-content-between">
                                                 <span class="text-primary fw-bold fs-5">Добавить общественную деятельность</span><p>* - обязательные поля</p>
                                             </div>
-                                            <form id="create-social-activity" method="POST" class="profile-input-group">
+                                            <form id="create-social-activity" method="POST" class="profile-input-group" enctype="multipart/form-data">
 
-                                               <div class="row">
-                                                    <div class="col-lg-8 profile-input mb-3">                                       
-                                                        <label class="form-label">Выберите тип деятельности *</label>                                        
-                                                        <select class="form-select"  id="social_activity_category">
-                                                            <option value="in_fond">В Фонде</option>
-                                                            <option value="not_only_in_fond">В Фонде и не только</option>
-                                                         
-                                                        </select>
-                                                    </div>
-                                                    
-                                               </div>
+
+                                                <input type="hidden" name="create_social_activity" value="true">
+                                                <div class="row">
+                                                        <div class="col-lg-8 profile-input mb-3">                                       
+                                                            <label class="form-label">Выберите тип деятельности *</label>                                        
+                                                            <select class="form-select"  id="social_activity_category" name="social_activity_category">
+                                                                <option value="in_fond">В Фонде</option>
+                                                                <option value="not_only_in_fond">В Фонде и не только</option>
+                                                            
+                                                            </select>
+                                                        </div>
+                                                        
+                                                </div>
 
                                                <div class="row social_activity_type">
                                                     
@@ -331,7 +346,7 @@ if(!isset($_SESSION['user'])){
                                                    <label class="form-label">Год *</label>
                                                 
                                                 <div class="col-lg-2">
-                                                <input type="text" id="social-year-input" class="form-control"  aria-describedby="emailHelp" required value="">
+                                                <input  type="number" max="9999" min="0" type="text" id="social-year-input" name="social-year-input" class="form-control"  aria-describedby="emailHelp" required value="">
                                                 </div>
                                                </div>
                                                <div class="profile-input mb-3">
@@ -339,17 +354,17 @@ if(!isset($_SESSION['user'])){
                                                    <label class="form-label">Полное название *</label>
                                                 
                                                    
-                                                   <input type="text" id="social-title-input" class="form-control"  aria-describedby="emailHelp" required value="">
+                                                   <input type="text" id="social-title-input" name="social-title-input" class="form-control"  aria-describedby="emailHelp" required value="">
                                                    
                                                    
                                            
                                                </div>
                                                <div class="profile-input mb-3">
                                                    
-                                                   <label class="form-label">Краткое описание</label>
+                                                   <label class="form-label">Краткое описание (не более 300 символов)</label>
                                                 
                                                    
-                                                   <textarea id="social-description-input" class="form-control"  aria-describedby="emailHelp" required value="
+                                                   <textarea maxlength="300" id="social-description-input" name="social-description-input" class="form-control"  aria-describedby="emailHelp" required value="
                                                     "></textarea>
                                                    
                                            
@@ -359,10 +374,19 @@ if(!isset($_SESSION['user'])){
                                                    <label class="form-label">Ссылка (необязательно)</label>
                                                 
                                                    
-                                                   <input type="text" id="social-link-input" class="form-control"  aria-describedby="emailHelp" value="">
+                                                   <input type="text" id="social-link-input" name="social-link-input" class="form-control"  aria-describedby="emailHelp" value="">
                                                    
                                                    
                                            
+                                               </div>
+                                               <div class="profile-input mb-5">
+                                                   
+                                                   <label class="form-label">Картинка (необязательно)</label>
+                                                
+                                                   <div class="col-lg-6">
+                                                    <input type="file" id="social-image-input" name="social-image-input" class="form-control"  aria-describedby="emailHelp" value="">
+
+                                                   </div>                
                                                </div>
                                                 <div class="row">
                                                     <div class="col-lg-4">
@@ -374,29 +398,21 @@ if(!isset($_SESSION['user'])){
                                                 </div>
                                                 <!-- еуые -->
                                             </form>   
-
-
-
-
-
-
-
-                                            
                                         </div>   
                                         <div class="tab-pane fade" id="v-pills-educational" role="tabpanel" aria-labelledby="v-pills-educational-tab">
                                         <div class="d-flex flex-wrap profile-input mb-3 justify-content-between">
                                                 <span class="text-primary fw-bold fs-5">Добавить просветительскую деятельность</span><p>* - обязательные поля</p>
                                             </div>
-                                            <form id="create-educational-activity" method="POST" class="profile-input-group">
+                                            <form id="create-educational-activity" method="POST" class="profile-input-group" enctype="multipart/form-data">
 
                                             
-
+                                               <input type="hidden" name="create_educational_activity" value="true">
                                                <div class="row educational_activity_type">
                                                     <div class="col-lg-8 profile-input mb-3">
                                                         
                                                         <label class="form-label">Выберите тип деятельности*</label>
                                                 
-                                                        <select class="form-select" id="educational_type">
+                                                        <select class="form-select" id="educational_type" name="educational_type"> 
                                                         <option value="international">Спикер на Международных мероприятиях (5 баллов)</option>
                                                         <option value="russian">Спикер на Всероссийских мероприятиях (3 балла)</option>
                                                         <option value="regional">Спикер на Региональных мероприятиях (1 балл)</option>
@@ -410,38 +426,32 @@ if(!isset($_SESSION['user'])){
                                                    <label class="form-label">Год *</label>
                                                 
                                                 <div class="col-lg-2">
-                                                <input type="text" id="educational-year-input" class="form-control"  aria-describedby="emailHelp" required value="">
+                                                <input  type="number" max="9999" min="0"  id="educational-year-input" name="educational-year-input" class="form-control"  aria-describedby="emailHelp" required value="">
                                                 </div>
                                                </div>
-                                               <div class="profile-input mb-3">
-                                                   
-                                                   <label class="form-label">Полное название *</label>
-                                                
-                                                   
-                                                   <input type="text" id="educational-title-input" class="form-control"  aria-describedby="emailHelp" required value="">
-                                                   
-                                                   
-                                           
+                                               <div class="profile-input mb-3">            
+                                                   <label class="form-label">Полное название *</label> 
+                                                   <input type="text"  id="educational-title-input" name="educational-title-input" class="form-control"  aria-describedby="emailHelp" required value="">
                                                </div>
                                                <div class="profile-input mb-3">
                                                    
-                                                   <label class="form-label">Краткое описание</label>
-                                                
-                                                   
-                                                   <textarea id="educational-description-input" class="form-control"  aria-describedby="emailHelp" value="
+                                                   <label class="form-label">Краткое описание (не более 300 символов)</label>
+                                                   <textarea maxlength="300" id="educational-description-input" name="educational-description-input" class="form-control"  aria-describedby="emailHelp" value="
                                                     "></textarea>
-                                                   
-                                           
                                                </div>
                                                <div class="profile-input mb-3">
                                                    
                                                    <label class="form-label">Ссылка (необязательно)</label>
+                                                   <input type="text"  id="educational-link-input" name="educational-link-input" class="form-control"  aria-describedby="emailHelp" value="">
+                                               </div>
+                                               <div class="profile-input mb-5">
+                                                   
+                                                   <label class="form-label">Картинка (необязательно)</label>
                                                 
-                                                   
-                                                   <input type="text" id="educational-link-input" class="form-control"  aria-describedby="emailHelp" value="">
-                                                   
-                                                   
-                                           
+                                                   <div class="col-lg-6">
+                                                    <input type="file" id="educational-image-input" name="educational-image-input" class="form-control"  aria-describedby="emailHelp" value="">
+
+                                                   </div>                
                                                </div>
                                                 <div class="row">
                                                     <div class="col-lg-4">
@@ -458,13 +468,15 @@ if(!isset($_SESSION['user'])){
                                         <div class="d-flex flex-wrap profile-input mb-3 justify-content-between">
                                                 <span class="text-primary fw-bold fs-5">Добавить волонтёрскую деятельность</span><p>* - обязательные поля</p>
                                             </div>
-                                            <form id="create-volunteer-activity" method="POST" class="profile-input-group">
+                                            <form id="create-volunteer-activity" method="POST" class="profile-input-group" enctype="multipart/form-data">
+
+                                            <input type="hidden" name="create_volunteer_activity" value="true">
                                                <div class="row volunteer_activity_type">
                                                     <div class="col-lg-10 profile-input mb-3">
                                                         
                                                         <label class="form-label">Выберите тип деятельности*</label>
                                                 
-                                                        <select class="form-select" id="volunteer_type">
+                                                        <select class="form-select" id="volunteer_type" name="volunteer_type">
                                                         <option value="international">Организатор Международных и Всероссийских волонтерских мероприятий (5 баллов)</option>
                                                         <option value="russian">Организатор Региональных волонтерских мероприятий (3 балла)</option>
                                                         <option value="regional">Организатор Университетских волонтерских мероприятий (1 балл)</option>
@@ -481,38 +493,38 @@ if(!isset($_SESSION['user'])){
                                                    <label class="form-label">Год *</label>
                                                 
                                                 <div class="col-lg-2">
-                                                <input type="text" id="volunteer-year-input" class="form-control"  aria-describedby="emailHelp" required value="">
+                                                <input  type="number" max="9999" min="0" id="volunteer-year-input" name="volunteer-year-input" class="form-control"  aria-describedby="emailHelp" required value="">
                                                 </div>
                                                </div>
                                                <div class="profile-input mb-3">
                                                    
                                                    <label class="form-label">Полное название *</label>
-                                                
-                                                   
-                                                   <input type="text" id="volunteer-title-input" class="form-control"  aria-describedby="emailHelp" required value="">
-                                                   
-                                                   
-                                           
+    
+                                                   <input type="text" id="volunteer-title-input" name="volunteer-title-input" class="form-control"  aria-describedby="emailHelp" required value="">
                                                </div>
                                                <div class="profile-input mb-3">
                                                    
-                                                   <label class="form-label">Краткое описание</label>
-                                                
-                                                   
-                                                   <textarea id="volunteer-description-input" class="form-control"  aria-describedby="emailHelp" value="
+                                                   <label class="form-label">Краткое описание (не более 300 символов)</label>
+
+                                                   <textarea maxlength="300"  id="volunteer-description-input" name="volunteer-description-input" class="form-control"  aria-describedby="emailHelp" value="
                                                     "></textarea>
-                                                   
-                                           
+
                                                </div>
                                                <div class="profile-input mb-3">
                                                    
                                                    <label class="form-label">Ссылка (необязательно)</label>
+       
+                                                   <input type="text" id="volunteer-link-input" name="volunteer-link-input" class="form-control"  aria-describedby="emailHelp" value="">
+
+                                               </div>
+                                               <div class="profile-input mb-5">
+                                                   
+                                                   <label class="form-label">Картинка (необязательно)</label>
                                                 
-                                                   
-                                                   <input type="text" id="volunteer-link-input" class="form-control"  aria-describedby="emailHelp" value="">
-                                                   
-                                                   
-                                           
+                                                   <div class="col-lg-6">
+                                                    <input type="file" id="volunteer-image-input" name="volunteer-image-input" class="form-control"  aria-describedby="emailHelp" value="">
+
+                                                   </div>                
                                                </div>
                                                 <div class="row">
                                                     <div class="col-lg-4">
@@ -529,13 +541,15 @@ if(!isset($_SESSION['user'])){
                                         <div class="d-flex flex-wrap profile-input mb-3 justify-content-between">
                                                 <span class="text-primary fw-bold fs-5">Добавить практики и стажировки</span><p>* - обязательные поля</p>
                                             </div>
-                                            <form id="create-internship-activity" method="POST" class="profile-input-group">
+                                            <form id="create-internship-activity" method="POST" class="profile-input-group" enctype="multipart/form-data">
+
+                                            <input type="hidden" name="create_internship_activity" value="true">
                                                <div class="row internship_activity_type">
                                                     <div class="col-lg-10 profile-input mb-3">
                                                         
                                                         <label class="form-label">Выберите тип практики или стажировки*</label>
                                                 
-                                                        <select class="form-select" id="internship_type">
+                                                        <select class="form-select" id="internship_type" name="internship_type">
                                                             <option value="international">Международная  (5 баллов)</option>
                                                             <option value="russian">Всероссийская (3 балла)</option>
                                                             <option value="regional">Региональная (1 балл)</option>
@@ -550,7 +564,7 @@ if(!isset($_SESSION['user'])){
                                                    <label class="form-label">Год *</label>
                                                 
                                                 <div class="col-lg-2">
-                                                <input type="text" id="internship-year-input" class="form-control"  aria-describedby="emailHelp" required value="">
+                                                    <input  type="number" max="9999" min="0" id="internship-year-input" name="internship-year-input" class="form-control"  aria-describedby="emailHelp" required value="">
                                                 </div>
                                                </div>
                                                <div class="profile-input mb-3">
@@ -558,17 +572,17 @@ if(!isset($_SESSION['user'])){
                                                    <label class="form-label">Полное название *</label>
                                                 
                                                    
-                                                   <input type="text" id="internship-title-input" class="form-control"  aria-describedby="emailHelp" required value="">
+                                                   <input type="text" id="internship-title-input" name="internship-title-input" class="form-control"  aria-describedby="emailHelp" required value="">
                                                    
                                                    
                                            
                                                </div>
                                                <div class="profile-input mb-3">
                                                    
-                                                   <label class="form-label">Краткое описание</label>
+                                                   <label class="form-label">Краткое описание (не более 300 символов)</label>
                                                 
                                                    
-                                                   <textarea id="internship-description-input" class="form-control"  aria-describedby="emailHelp" value="
+                                                   <textarea maxlength="300" id="internship-description-input" name="internship-description-input" class="form-control"  aria-describedby="emailHelp" value="
                                                     "></textarea>
                                                    
                                            
@@ -578,10 +592,19 @@ if(!isset($_SESSION['user'])){
                                                    <label class="form-label">Ссылка (необязательно)</label>
                                                 
                                                    
-                                                   <input type="text" id="internship-link-input" class="form-control"  aria-describedby="emailHelp" value="">
+                                                   <input type="text" id="internship-link-input" name="internship-link-input" class="form-control"  aria-describedby="emailHelp" value="">
                                                    
                                                    
                                            
+                                               </div>
+                                               <div class="profile-input mb-5">
+                                                   
+                                                   <label class="form-label">Картинка (необязательно)</label>
+                                                
+                                                   <div class="col-lg-6">
+                                                    <input type="file" id="internship-image-input" name="internship-image-input" class="form-control"  aria-describedby="emailHelp" value="">
+
+                                                   </div>                
                                                </div>
                                                 <div class="row">
                                                     <div class="col-lg-4">
@@ -759,25 +782,30 @@ if(!isset($_SESSION['user'])){
 
     $('#activity_category').trigger('change');
 
-   
     $('#create-scientific-activity').on('submit', function(e) {
         e.preventDefault();
+
+        var formData = new FormData(this);
 
         $.ajax({
             type: 'POST',
             url: 'rating-controller.php',
-            data: {
-                create_scientific_activity: true,
-                activity_category: $('#activity_category').val(),
-                publication_type: $('#publication_type').val(),
-                publication_rating: $('#publication_rating').val(),
-                year: $('#science-year-input').val(),
-                full_publication_name: $('#science-title-input').val(),
-                short_description: $('#science-description-input').val(),
-                publication_link: $('#science-link-input').val(),
-            }, // Передаем payload
+            data: formData, 
+            processData: false, 
+            contentType: false, 
             success: function(response) {
-                showAlert('Данные успешно обновлены', 'success');
+
+                console.log(response);
+                
+                var json_res = JSON.parse(response) ? JSON.parse(response) : {};
+
+                if(json_res.warning){
+                    showAlert(json_res.warning, 'warning');
+                } else {
+                    showAlert('Данные успешно обновлены', 'success');
+                }
+                
+                
             },
             error: function(xhr, status, error) {
                 // Обработка ошибок (если нужно)
@@ -791,20 +819,25 @@ if(!isset($_SESSION['user'])){
     $('#create-scholarship-activity').on('submit', function(e) {
         e.preventDefault();
 
+        var formData = new FormData(this);
+
         $.ajax({
             type: 'POST',
-            url: 'rating-controller.php', // Укажите правильный URL для обработки этой формы
-            data: {
-                create_scholarship_activity: true,
-                scholarship_type: $('#scholarship_type').val(),
-                year: $('#scholarship-year-input').val(),
-                full_scholarship_name: $('#scholarship-title-input').val(),
-                short_description: $('#scholarship-description-input').val(),
-                scholarship_link: $('#scholarship-link-input').val(),
-            }, // Передаем payload
+            url: 'rating-controller.php',
+            data: formData, 
+            processData: false, 
+            contentType: false, 
             success: function(response) {
-                showAlert('Данные успешно обновлены', 'success');
-                console.log(response)
+
+                var json_res = JSON.parse(response);
+
+                if(json_res.warning){
+                    showAlert(json_res.warning, 'warning');
+                } else {
+                    showAlert('Данные успешно обновлены', 'success');
+                }
+
+
             },
             error: function(xhr, status, error) {
                 // Обработка ошибок (если нужно)
@@ -818,20 +851,25 @@ if(!isset($_SESSION['user'])){
     $('#create-olympiad-activity').on('submit', function(e) {
         e.preventDefault();
 
+        var formData = new FormData(this);
+
         $.ajax({
             type: 'POST',
-            url: 'rating-controller.php', // Укажите правильный URL для обработки этой формы
-            data: {
-                create_olympiad_activity: true,
-                olympiad_type: $('#olympiad_type').val(),
-                year: $('#olympiad-year-input').val(),
-                full_olympiad_name: $('#olympiad-title-input').val(),
-                short_description: $('#olympiad-description-input').val(),
-                olympiad_link: $('#olympiad-link-input').val(),
-            }, // Передаем payload
+            url: 'rating-controller.php',
+            data: formData, 
+            processData: false, 
+            contentType: false, 
             success: function(response) {
+
+            var json_res = JSON.parse(response);
+
+            if(json_res.warning){
+                showAlert(json_res.warning, 'warning');
+            } else {
                 showAlert('Данные успешно обновлены', 'success');
-                console.log(response)
+            }
+
+
             },
             error: function(xhr, status, error) {
                 // Обработка ошибок (если нужно)
@@ -845,20 +883,24 @@ if(!isset($_SESSION['user'])){
     $('#create-sports-activity').on('submit', function(e) {
         e.preventDefault();
 
+        var formData = new FormData(this);
+
         $.ajax({
             type: 'POST',
-            url: 'rating-controller.php', // Укажите правильный URL для обработки этой формы
-            data: {
-                create_sports_activity: true,
-                sports_type: $('#sports_type').val(),
-                year: $('#sports-year-input').val(),
-                full_sports_name: $('#sports-title-input').val(),
-                short_description: $('#sports-description-input').val(),
-                sports_link: $('#sports-link-input').val(),
-            }, // Передаем payload
+            url: 'rating-controller.php',
+            data: formData, 
+            processData: false, 
+            contentType: false, 
             success: function(response) {
-                showAlert('Данные успешно обновлены', 'success');
-                console.log(response)
+
+                var json_res = JSON.parse(response);
+
+                if(json_res.warning){
+                    showAlert(json_res.warning, 'warning');
+                } else {
+                    showAlert('Данные успешно обновлены', 'success');
+                }
+
             },
             error: function(xhr, status, error) {
                 // Обработка ошибок (если нужно)
@@ -888,7 +930,7 @@ if(!isset($_SESSION['user'])){
                                                         
                     <label class="form-label">Тип участия в деятельности *</label>
             
-                    <select class="form-select" id="social_activity_type">
+                    <select class="form-select" id="social_activity_type" name="social_activity_type">
                         <option value="curator">Куратор направления стипендиальной программы Фонда (5 баллов)</option>
                         <option value="participant">Участник направления стипендиальной программы Фонда (3 балла)</option>
                     </select>
@@ -900,7 +942,7 @@ if(!isset($_SESSION['user'])){
                                                         
                     <label class="form-label">Тип участия в деятельности *</label>
             
-                    <select class="form-select" id="social_activity_type">
+                    <select class="form-select" id="social_activity_type" name="social_activity_type">
                         <option value="international">Организатор Международных и Всероссийских мероприятий (5 баллов)</option>
                         <option value="russian">Организатор Региональных мероприятий (3 балла)</option>
                         <option value="regional">Организатор Университетских мероприятий (1 балл)</option>
@@ -918,20 +960,25 @@ if(!isset($_SESSION['user'])){
     $('#create-social-activity').on('submit', function(e) {
         e.preventDefault();
 
+        var formData = new FormData(this);
+
         $.ajax({
             type: 'POST',
             url: 'rating-controller.php',
-            data: {
-                create_social_activity: true,
-                activity_category: $('#social_activity_category').val(),
-                activity_type: $('#social_activity_type').val(),
-                year: $('#social-year-input').val(),
-                title: $('#social-title-input').val(),
-                short_description: $('#social-description-input').val(),
-                social_link: $('#social-link-input').val(),
-            }, // Передаем payload
+            data: formData, 
+            processData: false, 
+            contentType: false, 
             success: function(response) {
-                showAlert('Данные успешно обновлены', 'success');
+
+                var json_res = JSON.parse(response);
+
+                if(json_res.warning){
+                    showAlert(json_res.warning, 'warning');
+                } else {
+                    showAlert('Данные успешно обновлены', 'success');
+                }
+
+
             },
             error: function(xhr, status, error) {
                 // Обработка ошибок (если нужно)
@@ -945,20 +992,22 @@ if(!isset($_SESSION['user'])){
     $('#create-educational-activity').on('submit', function(e) {
         e.preventDefault();
 
+        var formData = new FormData(this);
+
         $.ajax({
             type: 'POST',
-            url: 'rating-controller.php', // Укажите правильный URL для обработки этой формы
-            data: {
-                create_educational_activity: true,
-                activity_type: $('#educational_type').val(),
-                year: $('#educational-year-input').val(),
-                title: $('#educational-title-input').val(),
-                short_description: $('#educational-description-input').val(),
-                educational_link: $('#educational-link-input').val(),
-            }, // Передаем payload
+            url: 'rating-controller.php',
+            data: formData, 
+            processData: false, 
+            contentType: false, 
             success: function(response) {
-                showAlert('Данные успешно обновлены', 'success');
-                console.log(response)
+                var json_res = JSON.parse(response);
+
+                if(json_res.warning){
+                    showAlert(json_res.warning, 'warning');
+                } else {
+                    showAlert('Данные успешно обновлены', 'success');
+                }
             },
             error: function(xhr, status, error) {
                 // Обработка ошибок (если нужно)
@@ -972,20 +1021,22 @@ if(!isset($_SESSION['user'])){
     $('#create-volunteer-activity').on('submit', function(e) {
         e.preventDefault();
 
+        var formData = new FormData(this);
+
         $.ajax({
             type: 'POST',
-            url: 'rating-controller.php', // Укажите правильный URL для обработки этой формы
-            data: {
-                create_volunteer_activity: true,
-                activity_type: $('#volunteer_type').val(),
-                year: $('#volunteer-year-input').val(),
-                title: $('#volunteer-title-input').val(),
-                short_description: $('#volunteer-description-input').val(),
-                volunteer_link: $('#volunteer-link-input').val(),
-            }, // Передаем payload
+            url: 'rating-controller.php',
+            data: formData, 
+            processData: false, 
+            contentType: false, 
             success: function(response) {
-                showAlert('Данные успешно обновлены', 'success');
-                console.log(response)
+                var json_res = JSON.parse(response);
+
+                if(json_res.warning){
+                    showAlert(json_res.warning, 'warning');
+                } else {
+                    showAlert('Данные успешно обновлены', 'success');
+                }
             },
             error: function(xhr, status, error) {
                 // Обработка ошибок (если нужно)
@@ -994,26 +1045,27 @@ if(!isset($_SESSION['user'])){
         });
     });
 </script>
-
 
 <script>
     $('#create-internship-activity').on('submit', function(e) {
         e.preventDefault();
 
+        var formData = new FormData(this);
+
         $.ajax({
             type: 'POST',
-            url: 'rating-controller.php', // Укажите правильный URL для обработки этой формы
-            data: {
-                create_internship_activity: true,
-                activity_type: $('#internship_type').val(),
-                year: $('#internship-year-input').val(),
-                title: $('#internship-title-input').val(),
-                short_description: $('#internship-description-input').val(),
-                internship_link: $('#internship-link-input').val(),
-            }, // Передаем payload
+            url: 'rating-controller.php',
+            data: formData, 
+            processData: false, 
+            contentType: false, 
             success: function(response) {
-                showAlert('Данные успешно обновлены', 'success');
-                console.log(response)
+                var json_res = JSON.parse(response);
+
+                if(json_res.warning){
+                    showAlert(json_res.warning, 'warning');
+                } else {
+                    showAlert('Данные успешно обновлены', 'success');
+                }
             },
             error: function(xhr, status, error) {
                 // Обработка ошибок (если нужно)
@@ -1022,7 +1074,5 @@ if(!isset($_SESSION['user'])){
         });
     });
 </script>
-
-
 
 <?php require "footer.php"?>

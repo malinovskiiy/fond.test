@@ -1,5 +1,7 @@
 <?php 
-require "header.php";
+require_once "header.php";
+
+require_once 'functions.php';
 
 if(!isset($_SESSION['user'])){
 	header("Location: 404.php");
@@ -14,9 +16,12 @@ if(isset($_POST['set_avatar'])){
 	$filename = "uploads/profile_img/". md5(microtime()).".".substr($type, strlen("image/"));
     
     // First check avatar then load to server
-	if(avatarSecurity($avatar)){
+	if(imageSecurity($avatar)){
         unset($_SESSION['avatar_error']);
-		move_uploaded_file($_FILES['avatar']['tmp_name'], $filename);
+        $output_dir = 'uploads/profile_img';
+
+        $filename = loadAndCompressImage($_FILES['avatar'], $output_dir);
+		
 		$UserService->updateAvatar($filename, $_SESSION['user']['id']);
 	} else {
         $_SESSION['avatar_error'] = 'Попробуйте другое изображение';
@@ -137,7 +142,7 @@ if(isset($_POST['set_avatar'])){
                                                         <label class="form-label">Тематика исследований</label>
                                                     </div>
                                                     <div class="col-lg-8">
-                                                    <textarea id="research-topic-input" class="form-control"  aria-describedby="emailHelp"><?php echo $UserData['research_topic']?></textarea>
+                                                    <textarea maxlength="300" id="research-topic-input" class="form-control"  aria-describedby="emailHelp"><?php echo $UserData['research_topic']?></textarea>
                                                     </div>
                                                 </div>
                                                 <div class="row profile-input mb-3">
@@ -145,7 +150,7 @@ if(isset($_POST['set_avatar'])){
                                                         <label class="form-label">Обо мне</label>
                                                     </div>
                                                     <div class="col-lg-8">
-                                                    <textarea id="about-text-input" class="form-control"  aria-describedby="emailHelp" value="
+                                                    <textarea maxlength="300" id="about-text-input" class="form-control"  aria-describedby="emailHelp" value="
                                                     "><?php echo $UserData['about_text']?></textarea>
                                                     </div>
                                                 </div>
@@ -154,7 +159,7 @@ if(isset($_POST['set_avatar'])){
                                                         <label class="form-label">Доп. умения и навыки</label>
                                                     </div>
                                                     <div class="col-lg-8">
-                                                    <textarea id="extra-skills-input" class="form-control"  aria-describedby="emailHelp" value="
+                                                    <textarea maxlength="300" id="extra-skills-input" class="form-control"  aria-describedby="emailHelp" value="
                                                     "><?php echo $UserData['extra_skills']?></textarea>
                                                     </div>
                                                 </div>
@@ -178,7 +183,7 @@ if(isset($_POST['set_avatar'])){
                                                         <label  class="form-label">Место учебы (полностью)</label>
                                                     </div>
                                                     <div class="col-lg-8">
-                                                    <textarea id="study-place-input" class="form-control"  aria-describedby="emailHelp" value="
+                                                    <textarea maxlength="300" id="study-place-input" class="form-control"  aria-describedby="emailHelp" value="
                                                     "><?php echo $UserData['study_place']?></textarea>
                                                     </div>
                                                 </div>
@@ -250,7 +255,7 @@ if(isset($_POST['set_avatar'])){
                                                             Иностранный язык и уровень владения (если есть сертификат с подтверждением уровня - данные сертификата)</label>
                                                     </div>
                                                     <div class="col-lg-8">
-                                                    <textarea id="study-languages-input"class="form-control"  aria-describedby="emailHelp" value="
+                                                    <textarea maxlength="300" id="study-languages-input"class="form-control"  aria-describedby="emailHelp" value="
                                                     "><?php echo $UserData['study_languages']?></textarea>
                                                     </div>
                                                 </div>
@@ -281,7 +286,7 @@ if(isset($_POST['set_avatar'])){
                                                         <label class="form-label">Тема НИР</label>
                                                     </div>
                                                     <div class="col-lg-8">
-                                                    <textarea id="science-work-topic-input" class="form-control"  aria-describedby="emailHelp"><?php echo $UserData['science_work_topic']?></textarea>
+                                                    <textarea maxlength="300" id="science-work-topic-input" class="form-control"  aria-describedby="emailHelp"><?php echo $UserData['science_work_topic']?></textarea>
                                                     </div>
                                                 </div>
                                                 <div class="row profile-input mb-3">
@@ -289,7 +294,7 @@ if(isset($_POST['set_avatar'])){
                                                         <label  class="form-label">Одно главное достижение в научной и/или учебной деятельности (за последние 3 года, с января 2021)</label>
                                                     </div>
                                                     <div class="col-lg-8">
-                                                    <textarea id="science-main-achievement-input" class="form-control"  aria-describedby="emailHelp"><?php echo $UserData['science_main_achievement']?></textarea>
+                                                    <textarea maxlength="300" id="science-main-achievement-input" class="form-control"  aria-describedby="emailHelp"><?php echo $UserData['science_main_achievement']?></textarea>
                                                     </div>
                                                 </div>
                                                 <div class="row profile-input mb-3">
@@ -297,7 +302,7 @@ if(isset($_POST['set_avatar'])){
                                                         <label  class="form-label">Членство в научных сообществах (с указанием должности/ статуса, при наличии)</label>
                                                     </div>
                                                     <div class="col-lg-8">
-                                                    <textarea id="science-societies-input" class="form-control"  aria-describedby="emailHelp"><?php echo $UserData['science_societies']?></textarea>
+                                                    <textarea maxlength="300" id="science-societies-input" class="form-control"  aria-describedby="emailHelp"><?php echo $UserData['science_societies']?></textarea>
                                                     </div>
                                                 </div>
                                                 <div class="row profile-input mb-3">
@@ -305,7 +310,7 @@ if(isset($_POST['set_avatar'])){
                                                         <label  class="form-label">Членство в иных сообществах (с указанием должности/ статуса, при наличии)</label>
                                                     </div>
                                                     <div class="col-lg-8">
-                                                    <textarea id="science-other-societies-input" class="form-control"  aria-describedby="emailHelp"><?php echo $UserData['science_other_societies']?></textarea>
+                                                    <textarea maxlength="300" id="science-other-societies-input" class="form-control"  aria-describedby="emailHelp"><?php echo $UserData['science_other_societies']?></textarea>
                                                     </div>
                                                 </div>
                                                 <div class="row profile-input mb-3">
@@ -313,7 +318,7 @@ if(isset($_POST['set_avatar'])){
                                                         <label  class="form-label">“Я - эксперт” (названия конкурсов и проектов)</label>
                                                     </div>
                                                     <div class="col-lg-8">
-                                                    <textarea id="science-ya-expert-input" class="form-control"  aria-describedby="emailHelp"><?php echo $UserData['science_ya_expert']?></textarea>
+                                                    <textarea maxlength="300" id="science-ya-expert-input" class="form-control"  aria-describedby="emailHelp"><?php echo $UserData['science_ya_expert']?></textarea>
                                                     </div>
                                                 </div>
                                                 <div class="row profile-input mb-3">
@@ -321,7 +326,7 @@ if(isset($_POST['set_avatar'])){
                                                         <label  class="form-label">“Я - амбассадор” (названия конкурсов и проектов)</label>
                                                     </div>
                                                     <div class="col-lg-8">
-                                                    <textarea id="science-ya-ambassador-input" class="form-control"  aria-describedby="emailHelp"><?php echo $UserData['science_ya_ambassador']?></textarea>
+                                                    <textarea maxlength="300" id="science-ya-ambassador-input" class="form-control"  aria-describedby="emailHelp"><?php echo $UserData['science_ya_ambassador']?></textarea>
                                                     </div>
                                                 </div>
                                                 <div class="row">
@@ -479,7 +484,7 @@ if(isset($_POST['set_avatar'])){
                                     
                                 </div>
                                 <div class="col-lg-8">
-                                    <textarea class="form-control workplace-name" aria-describedby="emailHelp">${workPlace.name}</textarea>
+                                    <textarea maxlength="300" class="form-control workplace-name" aria-describedby="emailHelp">${workPlace.name}</textarea>
                                 </div>
                             </div>
                             <div class="row profile-input mb-3">
@@ -570,16 +575,23 @@ if(isset($_POST['set_avatar'])){
 
         $(document).ready(function() {
 
+            loadKeywords();
             // Загрузка доступных рабочих мест при загрузке страницы
             loadWorkPlaces();
 
-            loadKeywords();
+            var typingTimer; // Таймер задержки между запросами
+            var doneTypingInterval = 500; // Задержка в миллисекундах (в данном случае 500 мс)
 
             $('#keywords').on('input', function() {
-                // Вызов функции для загрузки подсказок
-                loadSuggestions($(this).val());
+                clearTimeout(typingTimer); // Сбрасываем таймер при каждом новом вводе
+                typingTimer = setTimeout(doneTyping, doneTypingInterval); // Устанавливаем новый таймер
             });
-            
+
+            function doneTyping() {
+                // Этот код выполнится после завершения ввода и задержки
+                loadSuggestions($('#keywords').val()); // Отправляем запрос
+            }
+                        
             $('.user-keywords-btn').on('click', function() {
                 toggleKeyword(this.getAttribute('data-keyword-id'))
             })

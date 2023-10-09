@@ -68,6 +68,7 @@ ul {
     object-fit: cover;
 }
 
+
 .profile-tags li{
     transition: .3s ease;
 }
@@ -87,6 +88,10 @@ ul {
 
 .rating-bar span:hover {
     cursor: pointer;
+}
+
+.rating-bar a, small{
+    font-size: 14px;
 }
 
 .custom-tooltip {
@@ -150,4 +155,29 @@ ul {
 
 .nav-pills .nav-link{
     color: #222;
+}
+
+.page-link {
+    color: #008389 !important;
+}
+
+.page-item.active .page-link {
+    background-color: #008389 !important;
+    border-color: #008389 !important;
+    color: white !important;
+}
+
+.modal-body .col-lg-4 small {
+    font-weight: 500;
+}
+
+.activity_image_preview{
+    height: 100px;
+    width: 200px;
+}
+
+.activity_image_preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }

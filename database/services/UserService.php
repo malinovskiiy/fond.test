@@ -25,12 +25,11 @@ class UserService
         }
     }
 
-    // Search product by name
     public function getUserByName($username)
     {
         // If username exists and does not contain sinqle quote mark
         if (isset($username) && !strpos($username, "'")) {
-            $result = $this->db->connection->query("SELECT * FROM `users` WHERE username LIKE '%"."{$username}"."%'");
+            $result = $this->db->connection->query("SELECT * FROM `users` WHERE username = '$username'");
             $resultArray = array();
 
             // fetch product data one by one

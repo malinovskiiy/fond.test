@@ -39,23 +39,18 @@ $InternshipActivityService = new InternshipActivityService($db, 'internship_acti
 
 // ====================================================================================
 
-
 // Обьект авторизованного пользователя
 
 $UserData = $_SESSION['user'] ? $UserService->getUserById($_SESSION['user']['id'])[0] : 'null';
 
 // ===========================
 
-
-
-
-
 // Check type and size of image
-function avatarSecurity($avatar){
+function imageSecurity($image){
 
-	$name = $avatar['name'];
-	$type = $avatar['type'];
-	$size = $avatar['size'];
+	$name = $image['name'];
+	$type = $image['type'];
+	$size = $image['size'];
 
 	$blacklist = array(".php", ".js", ".html");
 
@@ -69,4 +64,39 @@ function avatarSecurity($avatar){
 	if($size > 5 * 1024 * 1024) return false;
 
 	return true;
+}
+
+
+function loadAndCompressImage($input_file, $output_dir, $quality = 50) {
+    // Проверяем, был ли загружен файл без ошибок
+    if ($input_file['error'] !== UPLOAD_ERR_OK) {
+        return false; // Возвращаем false, если есть ошибка при загрузке файла
+    }
+
+    // Создаем объект Imagick // для того чтобы ее установить запустите OpenServer зайдите в меню -> дополнительно -> конфигурация -> php_**** 
+	// откроется та версия php которую вы используете в данный момент и в этом файле найдите блок с опциями "extension" и в самом верху этих опций запишите следующее: 
+	// extension=php_imagick.dll далее перезапустите OpenServer
+	
+    $image = new Imagick();
+
+    $image->readImage($input_file['tmp_name']);
+       
+    // Устанавливаем формат WebP
+    $image->setImageFormat('webp');
+
+    // Устанавливаем качество сжатия
+    $image->setImageCompressionQuality($quality);
+
+    // Генерируем уникальное имя файла
+    $output_filename = $_SERVER['DOCUMENT_ROOT'] . '/' . $output_dir . '/' . md5(microtime()) . '.webp';
+
+    // Сохраняем сжатое изображение в указанную директорию
+    $image->writeImage($output_filename);
+
+    $position = strpos($output_filename, "/uploads");
+
+    $result_filename = substr($output_filename, $position);
+
+    return $result_filename; // Возвращаем путь к сжатому изображению (НЕ АБСОЛЮТНЫЙ ЧТОБЫ НА САЙТЕ ПОКАЗЫВАЛСЯ)
+  
 }

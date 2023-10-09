@@ -1,421 +1,441 @@
 <?php 
+
+$site_title = 'Мой профиль'; // Устанавливаем желаемый заголовок страницы
+
 require_once "header.php";
 
 if(!isset($_SESSION['user'])){
 	header("Location: 404.php");
 }
 
-$statistics = $ScientificActivityService->getActivityStatistics($UserData['id'])
+$statistics = $ScientificActivityService->getActivityStatistics($UserData['id']);
+$fond_activities = $SocialActivityService->getActivitiesInFond($UserData['id']);
 
 ?>
-    <div class="page-wrapper py-5">
-        <div class="container pt-5">
-            <div class="row">
-                <div class="col-lg-9">
-                    <main class="main">
-                        <div class="profile-card bg-white w-100 shadow mt-4 p-4 p-md-5">
-                            <div class="row">
-                                <div class="col-lg-6 d-flex align-items-center">
-                                    <div class="profile-main d-flex">
-                                        <div class="profile-picture">
-                                            <img src="<?php echo $UserData['image']?>" class="rounded-circle" alt="profile-picture">
-                                        </div>
-                                        <div class="profile-info ms-4">
-                                            <div class="profile-name d-flex align-items-center flex-wrap">
-                                               <h4 class="fw-bold"><?php echo $UserData['first_name']?> <?php echo $UserData['last_name']?></h4>
-                                            </div>
-                                            <div class="profile-role">
-                                                <h6 class="text-primary fw-bold">
-                                                    <?php if($UserData['involvement_level'] == 1):?>
-                                                        Член Ассоциации
-                                                    <?php else:?>
-                                                        Стипендиат
-                                                    <?php endif ?>
-                                                </h6>
-                                            </div>
-                                            <div class="profile-contacts d-flex flex-column">
-                                                <span class="text-break">@<?php echo $UserData['username']?></span>
-                                                
-                                                <span class="mt-2"><i class="fa-solid fa-building-columns text-primary"></i> <?php echo $UserData['study_place']?> <i class="mx-2 fa-solid fa-city text-primary"></i><?php echo $UserData['city']?></span>
-                                                
-                                            </div>
-                                            <button class="mt-3 btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#full-profile-info">
-                                            Подробнее
-                                            </button>
-                                        </div>
+<div class="page-wrapper py-5">
+    <div class="container pt-5">
+        <div class="row">
+            <div class="col-lg-9">
+                <main class="main">
+                    <div class="profile-card bg-white w-100 shadow mt-4 p-4 p-md-5">
+                        <div class="row">
+                            <div class="col-lg-6 d-flex align-items-center">
+                                <div class="profile-main d-flex">
+                                    <div class="profile-picture">
+                                        <img src="<?php echo $UserData['image']?>" class="rounded-circle" alt="profile-picture">
                                     </div>
-                                </div>
-                                <div class="col-lg-6 pt-4 pt-lg-0 d-flex flex-column justify-content-between">
-                                    <h5 class="text-primary fw-bold">Тематика исследований</h5>
-                                    <p class="mt-3">
-                                        <?php echo $UserData['research_topic']?>
-                                    </p>
-                                    <ul class="profile-tags d-flex flex-wrap align-items-start">
-                                    <?php if(!empty(json_decode($UserData['keywords']))): ?>
-                                        <?php foreach (explode(",", $UserData['keywords']) as $keyword): ?>
-                                            <li class="px-3 py-2 me-2 mt-2 btn btn-sm btn-outline-secondary">
-                                                <?php echo $KeywordService->getKeywordById(intval(str_replace(['"', "[", "]"], '', $keyword)))[0]['name'];?>
-                                            </li>
-                                        <?php endforeach?>
-                                    <?php else: ?>
-                                        Ключевые слова не настроены
-                                    <?php endif ?>
-                                    </ul>
-                                </div>
-                            </div>
-                            <!-- Button trigger modal -->
-                           
-
-
-                            
-                        </div>
-                        <div class="profile-card bg-white w-100 shadow mt-4 px-4 py-5 px-md-5">
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <h5 class="text-primary fw-bold">Комплексный рейтинг</h5>
-                                </div>
-                                <div class="col-lg-6 text-end">
-                                    <a href="/edit-complex-rating" class="btn btn-sm btn-primary">Редактировать</a>
-                                </div>
-                            </div>
-                            
-                            <div class="row">
-                                <div class="col-lg-4">
-                                    <div class="rating-bar mt-4">
-                                        <a href="complex-rating?id=<?php echo $_SESSION['user']['id']?>&tab=scientific_activity" class="text-dark" data-bs-toggle="tooltip" data-bs-custom-class="custom-tooltip" data-bs-html="true" data-bs-placement="right" data-bs-title="<div class='text-start'><h6 class='text-primary'>Критерии оценивания</h6><span>Оценка активности в публикации научных работ в различных научных журналах (SCOPUS, WoS, ВАК, РИНЦ)</span></div> ">Научная деятельность <small>(<?php echo $ScientificActivityService->calculatePoints($UserData['id']);?>)</small></a>
-                                        <div class="progress mt-3">
-                                        <?php
-                                            $SciencePoints = $ScientificActivityService->calculatePoints($UserData['id']);
-                                            
-                                            $color = ''; // Переменная для хранения цвета прогресс-бара
-                                            $displaySciencePoints = $SciencePoints; // Переменная для хранения отображаемых баллов
-                                            
-                                            
-                                            if ($SciencePoints >= 200) {
-                                                $color = 'bg-success'; // Желтый цвет для более чем 200 баллов
-                                                $displaySciencePoints = $SciencePoints % 100;
-                                            } elseif ($SciencePoints >= 100) {
-                                                $color = 'bg-primary'; // Красный цвет для более чем 100 баллов
-                                                $displaySciencePoints = $SciencePoints % 100; // Остаток от деления на 100
-                                            } else {
-                                                $color = 'bg-secondary'; // Красный цвет для более чем 100 баллов
-                                                
-                                            }
-                                            
-                                            // Вывод прогресс-бара с учетом цвета и отображаемых баллов
-                                            ?>
-                                            <div class="progress-bar <?php echo $color; ?>" role="progressbar" aria-label="Basic example" style="width: <?php echo $displaySciencePoints; ?>%" aria-valuenow="<?php echo $displaySciencePoints; ?>" aria-valuemin="0" aria-valuemax="100"></div>
+                                    <div class="profile-info ms-4">
+                                        <div class="profile-name d-flex align-items-center flex-wrap">
+                                            <h4 class="fw-bold"><?php echo $UserData['first_name']?> <?php echo $UserData['last_name']?></h4>
                                         </div>
-                                    </div>
-                                    <div class="rating-bar mt-4">
-                                        <a href="complex-rating?id=<?php echo $_SESSION['user']['id']?>&tab=scholarship" class="text-dark" data-bs-toggle="tooltip" data-bs-custom-class="custom-tooltip" data-bs-html="true" data-bs-placement="right" data-bs-title="<div class='text-start'><h6 class='text-primary'>Критерии оценивания</h6><span>Рассчитывается исходя из количества присудившихся стипендий, премий и медалей за последние 3 года</span></div> ">Стипендиальное поощрение</a> <small>(<?php echo $ScholarshipActivityService->calculatePoints($UserData['id']);?>)</small>
-                                        <div class="progress mt-3">
-                                        <?php
-                                            $ScholarshipPoints = $ScholarshipActivityService->calculatePoints($UserData['id']);
-                                            
-                                            $color = ''; // Переменная для хранения цвета прогресс-бара
-                                            $displayScholarshipPoints = $ScholarshipPoints; // Переменная для хранения отображаемых баллов
-                                            
-                                            
-                                            if ($ScholarshipPoints >= 200) {
-                                                $color = 'bg-success'; // Желтый цвет для более чем 200 баллов
-                                                $displayScholarshipPoints = $ScholarshipPoints % 100;
-                                            } elseif ($ScholarshipPoints >= 100) {
-                                                $color = 'bg-primary'; // Красный цвет для более чем 100 баллов
-                                                $displayScholarshipPoints = $ScholarshipPoints % 100; // Остаток от деления на 100
-                                            } else {
-                                                $color = 'bg-secondary'; // Красный цвет для более чем 100 баллов
-                                                
-                                            }
-                                            
-                                            // Вывод прогресс-бара с учетом цвета и отображаемых баллов
-                                            ?>
-                                            <div class="progress-bar <?php echo $color; ?>" role="progressbar" aria-label="Basic example" style="width: <?php echo $displayScholarshipPoints; ?>%" aria-valuenow="<?php echo $displayScholarshipPoints; ?>" aria-valuemin="0" aria-valuemax="100"></div>
+                                        <div class="profile-role">
+                                            <p class="text-primary fw-bold">
+                                                <?php if($UserData['involvement_level'] == 1):?>
+                                                    Член Ассоциации
+                                                <?php else:?>
+                                                    Стипендиат
+                                                <?php endif ?>
+                                            </p>
                                         </div>
-    
-                                    </div>
-                                    <div class="rating-bar mt-4">
-                                        <a href="complex-rating?id=<?php echo $_SESSION['user']['id']?>&tab=olympiad" class="text-dark" data-bs-toggle="tooltip" data-bs-custom-class="custom-tooltip" data-bs-html="true" data-bs-placement="right" data-bs-title="<div class='text-start'><h6 class='text-primary'>Критерии оценивания</h6><span>Оценка достижений и наград в различных конкурсах и олимпиадах.</span></div> ">Олимпиадная деятельность</a> <small>(<?php echo $OlympiadActivityService->calculatePoints($UserData['id']);?>)</small>
-                                        <div class="progress mt-3">
-                                        <?php
-                                            $OlympiadPoints = $OlympiadActivityService->calculatePoints($UserData['id']);
+                                        <div class="profile-contacts d-flex flex-column">
+                                            <span class="text-break">@<?php echo $UserData['username']?></span>
                                             
-                                            $color = ''; // Переменная для хранения цвета прогресс-бара
-                                            $displayOlympiadPoints = $OlympiadPoints; // Переменная для хранения отображаемых баллов
-                                            
-                                            
-                                            if ($OlympiadPoints >= 200) {
-                                                $color = 'bg-success'; // Желтый цвет для более чем 200 баллов
-                                                $displayOlympiadPoints = $OlympiadPoints % 100;
-                                            } elseif ($OlympiadPoints >= 100) {
-                                                $color = 'bg-primary'; // Красный цвет для более чем 100 баллов
-                                                $displayOlympiadPoints = $OlympiadPoints % 100; // Остаток от деления на 100
-                                            } else {
-                                                $color = 'bg-secondary'; // Красный цвет для более чем 100 баллов
+                                            <span class="mt-3">
+                                                <i class="fa-solid fa-building-columns text-primary me-1"></i> <?php echo $UserData['study_place']?>
+                                                <?php if(!empty($UserData['city'])):?>
+                                                    &nbsp;&#8226; <i class="mx-2 fa-solid text-primary fa-location-dot"></i><?php echo $UserData['city']?><br>
+                                                    <a href="#" class="text-primary" data-bs-toggle="modal" data-bs-target="#full-profile-info"><i class="me-2 fa-solid fa-circle-info"></i>Подробнее</a>
+                                                <?php else: ?>
+                                                    &nbsp;&#8226; <a href="#" class="text-primary" data-bs-toggle="modal" data-bs-target="#full-profile-info"><i class="mx-2 fa-solid fa-circle-info"></i>Подробнее</a>
+                                                <?php endif ?>
                                                 
-                                            }
-                                            
-                                            // Вывод прогресс-бара с учетом цвета и отображаемых баллов
-                                            ?>
-                                            <div class="progress-bar <?php echo $color; ?>" role="progressbar" aria-label="Basic example" style="width: <?php echo $displayOlympiadPoints; ?>%" aria-valuenow="<?php echo $displayOlympiadPoints; ?>" aria-valuemin="0" aria-valuemax="100"></div>
-                                        </div>
-                                    </div>
-                                    
-                                </div>
-                                <div class="col-lg-4">
-                                    <div class="rating-bar mt-4">
-                                        <a href="complex-rating?id=<?php echo $_SESSION['user']['id']?>&tab=sports" class="text-dark" data-bs-toggle="tooltip" data-bs-custom-class="custom-tooltip" data-bs-html="true" data-bs-placement="right" data-bs-title="<div class='text-start'><h6 class='text-primary'>Критерии оценивания</h6><span>Участие в международных, всероссийских и региональных соревнованиях оценивается согласно полученным призовым местам</span></div> ">Спортивная деятельность</a> <small>(<?php echo $SportsActivityService->calculatePoints($UserData['id']);?>)</small>
-                                        <div class="progress mt-3">
-                                        <?php
-                                            $SportsPoints = $SportsActivityService->calculatePoints($UserData['id']);
-                                            
-                                            $color = ''; // Переменная для хранения цвета прогресс-бара
-                                            $displaySportsPoints = $SportsPoints; // Переменная для хранения отображаемых баллов
-                                            
-                                            
-                                            if ($SportsPoints >= 200) {
-                                                $color = 'bg-success'; // Желтый цвет для более чем 200 баллов
-                                                $displaySportsPoints = $SportsPoints % 100;
-                                            } elseif ($SportsPoints >= 100) {
-                                                $color = 'bg-primary'; // Красный цвет для более чем 100 баллов
-                                                $displaySportsPoints = $SportsPoints % 100; // Остаток от деления на 100
-                                            } else {
-                                                $color = 'bg-secondary'; // Красный цвет для более чем 100 баллов
                                                 
-                                            }
+                                            </span>
                                             
-                                            // Вывод прогресс-бара с учетом цвета и отображаемых баллов
-                                            ?>
-                                            <div class="progress-bar <?php echo $color; ?>" role="progressbar" aria-label="Basic example" style="width: <?php echo $displaySportsPoints; ?>%" aria-valuenow="<?php echo $displaySportsPoints; ?>" aria-valuemin="0" aria-valuemax="100"></div>
                                         </div>
-    
-                                    </div>
-                                    <div class="rating-bar mt-4">
-                                        <a href="complex-rating?id=<?php echo $_SESSION['user']['id']?>&tab=social" class="text-dark" data-bs-toggle="tooltip" data-bs-custom-class="custom-tooltip" data-bs-html="true" data-bs-placement="right" data-bs-title="<div class='text-start'><h6 class='text-primary'>Критерии оценивания</h6><span>В этом разделе учитывается участие в качестве куратора или участника на мероприятих различного уровня</span></div> "> Общественная деятельность</a> <small>(<?php echo $SocialActivityService->calculatePoints($UserData['id']);?>)</small>
-                                        <div class="progress mt-3">
-                                        <?php
-                                            $SocialPoints = $SocialActivityService->calculatePoints($UserData['id']);
-                                            
-                                            $color = ''; // Переменная для хранения цвета прогресс-бара
-                                            $displaySocialPoints = $SocialPoints; // Переменная для хранения отображаемых баллов
-                                            
-                                            
-                                            if ($SocialPoints >= 200) {
-                                                $color = 'bg-success'; // Желтый цвет для более чем 200 баллов
-                                                $displaySocialPoints = $SocialPoints % 100;
-                                            } elseif ($SocialPoints >= 100) {
-                                                $color = 'bg-primary'; // Красный цвет для более чем 100 баллов
-                                                $displaySocialPoints = $SocialPoints % 100; // Остаток от деления на 100
-                                            } else {
-                                                $color = 'bg-secondary'; // Красный цвет для более чем 100 баллов
-                                                
-                                            }
-                                            
-                                            // Вывод прогресс-бара с учетом цвета и отображаемых баллов
-                                            ?>
-                                            <div class="progress-bar <?php echo $color; ?>" role="progressbar" aria-label="Basic example" style="width: <?php echo $displaySocialPoints; ?>%" aria-valuenow="<?php echo $displaySocialPoints; ?>" aria-valuemin="0" aria-valuemax="100"></div>
-                                        </div>
-    
-                                    </div>
-                                    <div class="rating-bar mt-4">
-                                        <a href="complex-rating?id=<?php echo $_SESSION['user']['id']?>&tab=educational" class="text-dark" data-bs-toggle="tooltip" data-bs-custom-class="custom-tooltip" data-bs-html="true" data-bs-placement="right" data-bs-title="<div class='text-start'><h6 class='text-primary'>Критерии оценивания</h6><span>Участие в качестве спикера на международных, всероссийских и региональных мероприятиях</span></div> ">Просветительская деятельность</a> <small>(<?php echo $EducationalActivityService->calculatePoints($UserData['id']);?>)</small>
-                                        <div class="progress mt-3">
-                                        <?php
-                                            $EducationalPoints = $EducationalActivityService->calculatePoints($UserData['id']);
-                                            
-                                            $color = ''; // Переменная для хранения цвета прогресс-бара
-                                            $displayEducationalPoints = $EducationalPoints; // Переменная для хранения отображаемых баллов
-                                            
-                                            
-                                            if ($EducationalPoints >= 200) {
-                                                $color = 'bg-success'; // Желтый цвет для более чем 200 баллов
-                                                $displayEducationalPoints = $EducationalPoints % 100;
-                                            } elseif ($EducationalPoints >= 100) {
-                                                $color = 'bg-primary'; // Красный цвет для более чем 100 баллов
-                                                $displayEducationalPoints = $EducationalPoints % 100; // Остаток от деления на 100
-                                            } else {
-                                                $color = 'bg-secondary'; // Красный цвет для более чем 100 баллов
-                                                
-                                            }
-                                            
-                                            // Вывод прогресс-бара с учетом цвета и отображаемых баллов
-                                            ?>
-                                            <div class="progress-bar <?php echo $color; ?>" role="progressbar" aria-label="Basic example" style="width: <?php echo $displayEducationalPoints; ?>%" aria-valuenow="<?php echo $displayEducationalPoints; ?>" aria-valuemin="0" aria-valuemax="100"></div>
-                                        </div>
-                                    </div>
-                                    
-                                </div>
-                                <div class="col-lg-4">
-                                    <div class="rating-bar mt-4">
-                                        <a href="complex-rating?id=<?php echo $_SESSION['user']['id']?>&tab=volunteer" class="text-dark" data-bs-toggle="tooltip" data-bs-custom-class="custom-tooltip" data-bs-html="true" data-bs-placement="right" data-bs-title="<div class='text-start'><h6 class='text-primary'>Критерии оценивания</h6><span>Считается по количеству участий в волонтерских мероприятиях за последние 3 года</span></div> ">Волонтёрская деятельность</a> <small>(<?php echo $VolunteerActivityService->calculatePoints($UserData['id']);?>)</small>
-                                        <div class="progress mt-3">
-                                        <?php
-                                            $VolunteerPoints = $VolunteerActivityService->calculatePoints($UserData['id']);
-                                            
-                                            $color = ''; // Переменная для хранения цвета прогресс-бара
-                                            $displayVolunteerPoints = $VolunteerPoints; // Переменная для хранения отображаемых баллов
-                                            
-                                            
-                                            if ($VolunteerPoints >= 200) {
-                                                $color = 'bg-success'; // Желтый цвет для более чем 200 баллов
-                                                $displayVolunteerPoints = $VolunteerPoints % 100;
-                                            } elseif ($VolunteerPoints >= 100) {
-                                                $color = 'bg-primary'; // Красный цвет для более чем 100 баллов
-                                                $displayVolunteerPoints = $VolunteerPoints % 100; // Остаток от деления на 100
-                                            } else {
-                                                $color = 'bg-secondary'; // Красный цвет для более чем 100 баллов
-                                                
-                                            }
-                                            
-                                            // Вывод прогресс-бара с учетом цвета и отображаемых баллов
-                                            ?>
-                                            <div class="progress-bar <?php echo $color; ?>" role="progressbar" aria-label="Basic example" style="width: <?php echo $displayVolunteerPoints; ?>%" aria-valuenow="<?php echo $displayVolunteerPoints; ?>" aria-valuemin="0" aria-valuemax="100"></div>
-                                        </div>
-    
-                                    </div>
-                                    <div class="rating-bar mt-4">
-                                        <a href="complex-rating?id=<?php echo $_SESSION['user']['id']?>&tab=internship" class="text-dark" data-bs-toggle="tooltip" data-bs-custom-class="custom-tooltip" data-bs-html="true" data-bs-placement="right" data-bs-title="<div class='text-start'><h6 class='text-primary'>Критерии оценивания</h6><span>Считается по количеству участий в практиках и стажировках за последние 3 года</span></div>">Практики и стажировки</a> <small>(<?php echo $InternshipActivityService->calculatePoints($UserData['id']);?>)</small>
-                                        <div class="progress mt-3">
-                                        <?php
-                                            $InternshipPoints = $InternshipActivityService->calculatePoints($UserData['id']);
-                                            
-                                            $color = ''; // Переменная для хранения цвета прогресс-бара
-                                            $displayInternshipPoints = $InternshipPoints; // Переменная для хранения отображаемых баллов
-                                            
-                                            
-                                            if ($InternshipPoints >= 200) {
-                                                $color = 'bg-success'; // Желтый цвет для более чем 200 баллов
-                                                $displayInternshipPoints = $InternshipPoints % 100;
-                                            } elseif ($InternshipPoints >= 100) {
-                                                $color = 'bg-primary'; // Красный цвет для более чем 100 баллов
-                                                $displayInternshipPoints = $InternshipPoints % 100; // Остаток от деления на 100
-                                            } else {
-                                                $color = 'bg-secondary'; // Красный цвет для более чем 100 баллов
-                                                
-                                            }
-                                            
-                                            // Вывод прогресс-бара с учетом цвета и отображаемых баллов
-                                            ?>
-                                            <div class="progress-bar <?php echo $color; ?>" role="progressbar" aria-label="Basic example" style="width: <?php echo $displayInternshipPoints; ?>%" aria-valuenow="<?php echo $displayInternshipPoints; ?>" aria-valuemin="0" aria-valuemax="100"></div>
-                                        </div>
-    
+                                        
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="profile-card bg-white w-100 shadow mt-4 px-4 py-4 px-md-5">
-                            <h5 class="text-primary fw-bold">Участие в проектах Фонда</h5>
-                            <div class="row">
-                                <div class="col-12">
-                                    <p class="mt-3">
-                                        Руководитель направления <span class="text-primary">«Экопросвещение через призму искусства»</span>, участник направления <span class="text-primary">«Межвузовский экологический клуб»</span>, участник направления <span class="text-primary">«Экспертный круг»</span>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="profile-card bg-white w-100 shadow mt-4 px-4 py-4 px-md-5">
-                            <h5 class="text-primary fw-bold">Статистика </h5>
-                            <div class="row mt-4">
-                                <div class="col-lg-6">
-                                    <div class="row">
-                                        <div class="col-md-4 d-flex flex-column mt-2 text-center">
-                                            <span>Публикации</span>
-                                            <span class="fs-1 fw-bold"><?php echo $statistics['total_publications']?></span>
-                                        </div>
-                                        <div class="col-md-8">
-                                            <ul class="stats-list">
-                                                <li class="w-100 d-flex justify-content-between px-4 mt-2"><a href="#" class="text-decoration-none">SCOPUS/WoS:</a><span class="fw-bold"><?php echo $statistics['scopus_publications']?></span></li>
-                                                <li class="w-100 d-flex justify-content-between px-4 mt-2"><a href="#" class="text-decoration-none">ВАК:</a><span class="fw-bold"><?php echo $statistics['vak_publications']?></span></li>
-                                                <li class="w-100 d-flex justify-content-between px-4 mt-2"><a href="#" class="text-decoration-none">РИНЦ:</a><span class="fw-bold"><?php echo $statistics['rinc_publications']?></span></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="row">
-                                        <div class="col-md-4 d-flex flex-column align-items-center text-center mt-3 mt-md-0">
-                                            <span>Конференции и конкурсы</span>
-                                            <span class="fs-1 fw-bold"><?php echo $statistics['total_conferences']?></span>
-                                        </div>
-                                        <div class="col-md-8"><ul class="stats-list">
-                                            <li class="w-100 d-flex justify-content-between px-4 mt-2"><a href="#" class="text-decoration-none">Международные:</a><span class="fw-bold"><?php echo $statistics['international_conferences']?></span></li>
-                                            <li class="w-100 d-flex justify-content-between px-4 mt-2"><a href="#" class="text-decoration-none">Всероссийские:</a><span class="fw-bold"><?php echo $statistics['russian_conferences'] ?></span></li>
-                                            <li class="w-100 d-flex justify-content-between px-4 mt-2"><a href="#" class="text-decoration-none">Региональные:</a><span class="fw-bold"><?php echo $statistics['regional_conferences']?></span></li>
-                                        </ul></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="profile-card bg-white w-100 shadow mt-4 px-4 py-4 px-md-5">
-                            <h5 class="text-primary fw-bold">Последние публикации</h5>
-                            <div class="row blog-posts">
-                                <div class="col-lg-6 blog-post mt-4">
-                                    <div class="blog-post-image w-100 mb-3">
-                                        <img src="./assets/img/blog-post-image.png" alt="blog-post-image">
-                                    </div>
-                                    <small class="blog-post-info text-muted">Мероприятие &#8226; 07.03.2022</small>
-                                    <h6 class="blog-post-title mt-3">Презентация проекта «Твой ход»</h6>
-                                    <p class="blog-post-preview-text mt-3">Мы рассказали о своём опыте участия в проекте и представили все возможности нового сезона. Больше дела, меньше слов. Время сделать твой ход!</p>
-                                    <a href="#" class="text-primary blog-post-link">Читать пост <i class="fa-solid fa-up-right-from-square ms-2"></i></a>
-                                </div>
-                                <div class="col-lg-6 blog-post mt-4">
-                                    <div class="blog-post-image w-100 mb-3">
-                                        <img src="./assets/img/blog-post-image-2.png" alt="blog-post-image">
-                                    </div>
-                                    <small class="blog-post-info text-muted">Мероприятие &#8226; 07.03.2022</small>
-                                    <h6 class="blog-post-title mt-3">Презентация проекта «Твой ход»</h6>
-                                    <p class="blog-post-preview-text mt-3">Мы рассказали о своём опыте участия в проекте и представили все возможности нового сезона. Больше дела, меньше слов. Время сделать твой ход!</p>
-                                    <a href="#" class="text-primary blog-post-link">Читать пост <i class="fa-solid fa-up-right-from-square ms-2"></i></a>
-                                </div>
-                                <div class="col-lg-6 blog-post mt-4">
-                                    <div class="blog-post-image w-100 mb-3">
-                                        <img src="./assets/img/test.jpg" alt="blog-post-image">
-                                    </div>
-                                    <small class="blog-post-info text-muted">Мероприятие &#8226; 07.03.2022</small>
-                                    <h6 class="blog-post-title mt-3">Презентация проекта «Твой ход»</h6>
-                                    <p class="blog-post-preview-text mt-3">Мы рассказали о своём опыте участия в проекте и представили все возможности нового сезона. Больше дела, меньше слов. Время сделать твой ход!</p>
-                                    <a href="#" class="text-primary blog-post-link">Читать пост <i class="fa-solid fa-up-right-from-square ms-2"></i></a>
-                                </div>
-                                <div class="col-lg-6 blog-post mt-4">
-                                    <div class="blog-post-image w-100 mb-3">
-                                        <img src="./assets/img/blog-post-image.png" alt="blog-post-image">
-                                    </div>
-                                    <small class="blog-post-info text-muted">Мероприятие &#8226; 07.03.2022</small>
-                                    <h6 class="blog-post-title mt-3">Презентация проекта «Твой ход»</h6>
-                                    <p class="blog-post-preview-text mt-3">Мы рассказали о своём опыте участия в проекте и представили все возможности нового сезона. Больше дела, меньше слов. Время сделать твой ход!</p>
-                                    <a href="#" class="text-primary blog-post-link">Читать пост <i class="fa-solid fa-up-right-from-square ms-2"></i></a>
-                                </div>
-                               
-                            </div>
-                        </div>
-                    </main>
-                </div>
-                <div class="col-lg-3">
-                    <aside class="sidebar">
-                        <div class="profile-card bg-white w-100 shadow mt-4 p-4">
-                            <h5 class="text-primary fw-bold">Обо мне</h5>
-                            <p class="mt-4">
-                                <?php echo $UserData['about_text']?>
-                            </p>
-                        </div>
-                        <div class="profile-card bg-white w-100 shadow mt-4 p-4">
-                            <h5 class="text-primary fw-bold">Контакты</h5>
-                            <ul class="contacts-list">
-                                <li class="mt-4"><small><i class="text-primary fa-solid fa-envelope"></i><span class="ms-3 text-break"><?php echo $UserData['email']?></span></small></li>
-                                <?php if($UserData['telegram']): ?>
-                                    <li class="mt-4"><small><a href="https://t.me/<?php echo $UserData['telegram']?>"><i class="fa-brands fa-telegram" style="color: #2AABEE"></i><span class="ms-3 text-break"><?php echo $UserData['telegram']?></span></a></small></li>
+                            <div class="col-lg-6 pt-4 pt-lg-0 d-flex flex-column justify-content-between">
+                                <h5 class="text-primary fw-bold">Тематика исследований</h5>
+                                <p class="mt-3">
+                                    <?php echo $UserData['research_topic'] ?? 'Не заполнено'?>
+                                </p>
+                                <ul class="profile-tags d-flex flex-wrap align-items-start">
+                                <?php if(!empty(json_decode($UserData['keywords']))): ?>
+                                    <?php foreach (explode(",", $UserData['keywords']) as $keyword): ?>
+                                        <li class="py-1 px-2 me-2 mt-2 btn btn-sm btn-outline-secondary">
+                                            <?php echo $KeywordService->getKeywordById(intval(str_replace(['"', "[", "]"], '', $keyword)))[0]['name'];?>
+                                        </li>
+                                    <?php endforeach?>
+                                <?php else: ?>
+                                    Ключевые слова не настроены
                                 <?php endif ?>
-                                <?php if($UserData['phone']): ?>
-                                    <li class="mt-4"><small><i class="text-primary fa-solid fa-phone" ></i><span class="ms-3 text-break"><?php echo $UserData['phone']?></span></small></li>
-                                <?php endif ?>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="profile-card bg-white w-100 shadow mt-4 px-4 py-5 px-md-5">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <h5 class="text-primary fw-bold">Комплексный рейтинг</h5>
+                            </div>
+                            <div class="col-lg-6 text-lg-end mt-2 mt-lg-0">
+                                <a href="complex-rating?id=<?php echo $_SESSION['user']['id']?>&tab=scientific_activity" class="btn btn-sm btn-primary me-2">Просмотр</a>
+
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <div class="rating-bar mt-4">
+                                    <a href="complex-rating?id=<?php echo $_SESSION['user']['id']?>&tab=scientific_activity" class="text-dark" data-bs-toggle="tooltip" data-bs-custom-class="custom-tooltip" data-bs-html="true" data-bs-placement="right" data-bs-title="<div class='text-start'><h6 class='text-primary'>Критерии оценивания</h6><span>Оценка активности в публикации научных работ в различных научных журналах (SCOPUS, WoS, ВАК, РИНЦ)</span></div> ">Научная деятельность <small>(<?php echo $ScientificActivityService->calculatePoints($UserData['id']) ?? 0;?>)</small></a>
+                                    <div class="progress mt-3">
+                                    <?php
+                                        $SciencePoints = $ScientificActivityService->calculatePoints($UserData['id']) ?? 0;
+                                        
+                                        $color = ''; // Переменная для хранения цвета прогресс-бара
+                                        $displaySciencePoints = $SciencePoints; // Переменная для хранения отображаемых баллов
+                                        
+                                        
+                                        if ($SciencePoints >= 200) {
+                                            $color = 'bg-success'; // Желтый цвет для более чем 200 баллов
+                                            $displaySciencePoints = $SciencePoints % 100;
+                                        } elseif ($SciencePoints >= 100) {
+                                            $color = 'bg-primary'; // Красный цвет для более чем 100 баллов
+                                            $displaySciencePoints = $SciencePoints % 100; // Остаток от деления на 100
+                                        } else {
+                                            $color = 'bg-secondary'; // Красный цвет для более чем 100 баллов
+                                            
+                                        }
+                                        
+                                        // Вывод прогресс-бара с учетом цвета и отображаемых баллов
+                                        ?>
+                                        <div class="progress-bar <?php echo $color; ?>" role="progressbar" aria-label="Basic example" style="width: <?php echo $displaySciencePoints; ?>%" aria-valuenow="<?php echo $displaySciencePoints; ?>" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+                                <div class="rating-bar mt-4">
+                                    <a href="complex-rating?id=<?php echo $_SESSION['user']['id']?>&tab=scholarship" class="text-dark" data-bs-toggle="tooltip" data-bs-custom-class="custom-tooltip" data-bs-html="true" data-bs-placement="right" data-bs-title="<div class='text-start'><h6 class='text-primary'>Критерии оценивания</h6><span>Рассчитывается исходя из количества присудившихся стипендий, премий и медалей за последние 3 года</span></div> ">Стипендиальное поощрение</a> <small>(<?php echo $ScholarshipActivityService->calculatePoints($UserData['id']) ?? 0;?>)</small>
+                                    <div class="progress mt-3">
+                                    <?php
+                                        $ScholarshipPoints = $ScholarshipActivityService->calculatePoints($UserData['id']) ?? 0;
+                                        
+                                        $color = ''; // Переменная для хранения цвета прогресс-бара
+                                        $displayScholarshipPoints = $ScholarshipPoints; // Переменная для хранения отображаемых баллов
+                                        
+                                        
+                                        if ($ScholarshipPoints >= 200) {
+                                            $color = 'bg-success'; // Желтый цвет для более чем 200 баллов
+                                            $displayScholarshipPoints = $ScholarshipPoints % 100;
+                                        } elseif ($ScholarshipPoints >= 100) {
+                                            $color = 'bg-primary'; // Красный цвет для более чем 100 баллов
+                                            $displayScholarshipPoints = $ScholarshipPoints % 100; // Остаток от деления на 100
+                                        } else {
+                                            $color = 'bg-secondary'; // Красный цвет для более чем 100 баллов
+                                            
+                                        }
+                                        
+                                        // Вывод прогресс-бара с учетом цвета и отображаемых баллов
+                                        ?>
+                                        <div class="progress-bar <?php echo $color; ?>" role="progressbar" aria-label="Basic example" style="width: <?php echo $displayScholarshipPoints; ?>%" aria-valuenow="<?php echo $displayScholarshipPoints; ?>" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+
+                                </div>
+                                <div class="rating-bar mt-4">
+                                    <a href="complex-rating?id=<?php echo $_SESSION['user']['id']?>&tab=olympiad" class="text-dark" data-bs-toggle="tooltip" data-bs-custom-class="custom-tooltip" data-bs-html="true" data-bs-placement="right" data-bs-title="<div class='text-start'><h6 class='text-primary'>Критерии оценивания</h6><span>Оценка достижений и наград в различных конкурсах и олимпиадах.</span></div> ">Олимпиадная деятельность</a> <small>(<?php echo $OlympiadActivityService->calculatePoints($UserData['id']) ?? 0;?>)</small>
+                                    <div class="progress mt-3">
+                                    <?php
+                                        $OlympiadPoints = $OlympiadActivityService->calculatePoints($UserData['id']) ?? 0;
+                                        
+                                        $color = ''; // Переменная для хранения цвета прогресс-бара
+                                        $displayOlympiadPoints = $OlympiadPoints; // Переменная для хранения отображаемых баллов
+                                        
+                                        
+                                        if ($OlympiadPoints >= 200) {
+                                            $color = 'bg-success'; // Желтый цвет для более чем 200 баллов
+                                            $displayOlympiadPoints = $OlympiadPoints % 100;
+                                        } elseif ($OlympiadPoints >= 100) {
+                                            $color = 'bg-primary'; // Красный цвет для более чем 100 баллов
+                                            $displayOlympiadPoints = $OlympiadPoints % 100; // Остаток от деления на 100
+                                        } else {
+                                            $color = 'bg-secondary'; // Красный цвет для более чем 100 баллов
+                                            
+                                        }
+                                        
+                                        // Вывод прогресс-бара с учетом цвета и отображаемых баллов
+                                        ?>
+                                        <div class="progress-bar <?php echo $color; ?>" role="progressbar" aria-label="Basic example" style="width: <?php echo $displayOlympiadPoints; ?>%" aria-valuenow="<?php echo $displayOlympiadPoints; ?>" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
                                 
-                            </ul>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="rating-bar mt-4">
+                                    <a href="complex-rating?id=<?php echo $_SESSION['user']['id']?>&tab=sports" class="text-dark" data-bs-toggle="tooltip" data-bs-custom-class="custom-tooltip" data-bs-html="true" data-bs-placement="right" data-bs-title="<div class='text-start'><h6 class='text-primary'>Критерии оценивания</h6><span>Участие в международных, всероссийских и региональных соревнованиях оценивается согласно полученным призовым местам</span></div> ">Спортивная деятельность</a> <small>(<?php echo $SportsActivityService->calculatePoints($UserData['id']) ?? 0;?>)</small>
+                                    <div class="progress mt-3">
+                                    <?php
+                                        $SportsPoints = $SportsActivityService->calculatePoints($UserData['id']) ?? 0;
+                                        
+                                        $color = ''; // Переменная для хранения цвета прогресс-бара
+                                        $displaySportsPoints = $SportsPoints; // Переменная для хранения отображаемых баллов
+                                        
+                                        
+                                        if ($SportsPoints >= 200) {
+                                            $color = 'bg-success'; // Желтый цвет для более чем 200 баллов
+                                            $displaySportsPoints = $SportsPoints % 100;
+                                        } elseif ($SportsPoints >= 100) {
+                                            $color = 'bg-primary'; // Красный цвет для более чем 100 баллов
+                                            $displaySportsPoints = $SportsPoints % 100; // Остаток от деления на 100
+                                        } else {
+                                            $color = 'bg-secondary'; // Красный цвет для более чем 100 баллов
+                                            
+                                        }
+                                        
+                                        // Вывод прогресс-бара с учетом цвета и отображаемых баллов
+                                        ?>
+                                        <div class="progress-bar <?php echo $color; ?>" role="progressbar" aria-label="Basic example" style="width: <?php echo $displaySportsPoints; ?>%" aria-valuenow="<?php echo $displaySportsPoints; ?>" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+
+                                </div>
+                                <div class="rating-bar mt-4">
+                                    <a href="complex-rating?id=<?php echo $_SESSION['user']['id']?>&tab=social" class="text-dark" data-bs-toggle="tooltip" data-bs-custom-class="custom-tooltip" data-bs-html="true" data-bs-placement="right" data-bs-title="<div class='text-start'><h6 class='text-primary'>Критерии оценивания</h6><span>В этом разделе учитывается участие в качестве куратора или участника на мероприятих различного уровня</span></div> "> Общественная деятельность</a> <small>(<?php echo $SocialActivityService->calculatePoints($UserData['id']) ?? 0;?>)</small>
+                                    <div class="progress mt-3">
+                                    <?php
+                                        $SocialPoints = $SocialActivityService->calculatePoints($UserData['id']) ?? 0;
+                                        
+                                        $color = ''; // Переменная для хранения цвета прогресс-бара
+                                        $displaySocialPoints = $SocialPoints; // Переменная для хранения отображаемых баллов
+                                        
+                                        
+                                        if ($SocialPoints >= 200) {
+                                            $color = 'bg-success'; // Желтый цвет для более чем 200 баллов
+                                            $displaySocialPoints = $SocialPoints % 100;
+                                        } elseif ($SocialPoints >= 100) {
+                                            $color = 'bg-primary'; // Красный цвет для более чем 100 баллов
+                                            $displaySocialPoints = $SocialPoints % 100; // Остаток от деления на 100
+                                        } else {
+                                            $color = 'bg-secondary'; // Красный цвет для более чем 100 баллов
+                                            
+                                        }
+                                        
+                                        // Вывод прогресс-бара с учетом цвета и отображаемых баллов
+                                        ?>
+                                        <div class="progress-bar <?php echo $color; ?>" role="progressbar" aria-label="Basic example" style="width: <?php echo $displaySocialPoints; ?>%" aria-valuenow="<?php echo $displaySocialPoints; ?>" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+
+                                </div>
+                                <div class="rating-bar mt-4">
+                                    <a href="complex-rating?id=<?php echo $_SESSION['user']['id']?>&tab=educational" class="text-dark" data-bs-toggle="tooltip" data-bs-custom-class="custom-tooltip" data-bs-html="true" data-bs-placement="right" data-bs-title="<div class='text-start'><h6 class='text-primary'>Критерии оценивания</h6><span>Участие в качестве спикера на международных, всероссийских и региональных мероприятиях</span></div> ">Просветительская деятельность</a> <small>(<?php echo $EducationalActivityService->calculatePoints($UserData['id']) ?? 0;?>)</small>
+                                    <div class="progress mt-3">
+                                    <?php
+                                        $EducationalPoints = $EducationalActivityService->calculatePoints($UserData['id']) ?? 0;
+                                        
+                                        $color = ''; // Переменная для хранения цвета прогресс-бара
+                                        $displayEducationalPoints = $EducationalPoints; // Переменная для хранения отображаемых баллов
+                                        
+                                        
+                                        if ($EducationalPoints >= 200) {
+                                            $color = 'bg-success'; // Желтый цвет для более чем 200 баллов
+                                            $displayEducationalPoints = $EducationalPoints % 100;
+                                        } elseif ($EducationalPoints >= 100) {
+                                            $color = 'bg-primary'; // Красный цвет для более чем 100 баллов
+                                            $displayEducationalPoints = $EducationalPoints % 100; // Остаток от деления на 100
+                                        } else {
+                                            $color = 'bg-secondary'; // Красный цвет для более чем 100 баллов
+                                            
+                                        }
+                                        
+                                        // Вывод прогресс-бара с учетом цвета и отображаемых баллов
+                                        ?>
+                                        <div class="progress-bar <?php echo $color; ?>" role="progressbar" aria-label="Basic example" style="width: <?php echo $displayEducationalPoints; ?>%" aria-valuenow="<?php echo $displayEducationalPoints; ?>" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="rating-bar mt-4">
+                                    <a href="complex-rating?id=<?php echo $_SESSION['user']['id']?>&tab=volunteer" class="text-dark" data-bs-toggle="tooltip" data-bs-custom-class="custom-tooltip" data-bs-html="true" data-bs-placement="right" data-bs-title="<div class='text-start'><h6 class='text-primary'>Критерии оценивания</h6><span>Считается по количеству участий в волонтерских мероприятиях за последние 3 года</span></div> ">Волонтёрская деятельность</a> <small>(<?php echo $VolunteerActivityService->calculatePoints($UserData['id']) ?? 0;?>)</small>
+                                    <div class="progress mt-3">
+                                    <?php
+                                        $VolunteerPoints = $VolunteerActivityService->calculatePoints($UserData['id']) ?? 0;
+                                        
+                                        $color = ''; // Переменная для хранения цвета прогресс-бара
+                                        $displayVolunteerPoints = $VolunteerPoints; // Переменная для хранения отображаемых баллов
+                                        
+                                        
+                                        if ($VolunteerPoints >= 200) {
+                                            $color = 'bg-success'; // Желтый цвет для более чем 200 баллов
+                                            $displayVolunteerPoints = $VolunteerPoints % 100;
+                                        } elseif ($VolunteerPoints >= 100) {
+                                            $color = 'bg-primary'; // Красный цвет для более чем 100 баллов
+                                            $displayVolunteerPoints = $VolunteerPoints % 100; // Остаток от деления на 100
+                                        } else {
+                                            $color = 'bg-secondary'; // Красный цвет для более чем 100 баллов
+                                            
+                                        }
+                                        
+                                        // Вывод прогресс-бара с учетом цвета и отображаемых баллов
+                                        ?>
+                                        <div class="progress-bar <?php echo $color; ?>" role="progressbar" aria-label="Basic example" style="width: <?php echo $displayVolunteerPoints; ?>%" aria-valuenow="<?php echo $displayVolunteerPoints; ?>" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+
+                                </div>
+                                <div class="rating-bar mt-4">
+                                    <a href="complex-rating?id=<?php echo $_SESSION['user']['id']?>&tab=internship" class="text-dark" data-bs-toggle="tooltip" data-bs-custom-class="custom-tooltip" data-bs-html="true" data-bs-placement="right" data-bs-title="<div class='text-start'><h6 class='text-primary'>Критерии оценивания</h6><span>Считается по количеству участий в практиках и стажировках за последние 3 года</span></div>">Практики и стажировки</a> <small>(<?php echo $InternshipActivityService->calculatePoints($UserData['id']) ?? 0;?>)</small>
+                                    <div class="progress mt-3">
+                                    <?php
+                                        $InternshipPoints = $InternshipActivityService->calculatePoints($UserData['id']) ?? 0;
+                                        
+                                        $color = ''; // Переменная для хранения цвета прогресс-бара
+                                        $displayInternshipPoints = $InternshipPoints; // Переменная для хранения отображаемых баллов
+                                        
+                                        
+                                        if ($InternshipPoints >= 200) {
+                                            $color = 'bg-success'; // Желтый цвет для более чем 200 баллов
+                                            $displayInternshipPoints = $InternshipPoints % 100;
+                                        } elseif ($InternshipPoints >= 100) {
+                                            $color = 'bg-primary'; // Красный цвет для более чем 100 баллов
+                                            $displayInternshipPoints = $InternshipPoints % 100; // Остаток от деления на 100
+                                        } else {
+                                            $color = 'bg-secondary'; // Красный цвет для более чем 100 баллов
+                                            
+                                        }
+                                        
+                                        // Вывод прогресс-бара с учетом цвета и отображаемых баллов
+                                        ?>
+                                        <div class="progress-bar <?php echo $color; ?>" role="progressbar" aria-label="Basic example" style="width: <?php echo $displayInternshipPoints; ?>%" aria-valuenow="<?php echo $displayInternshipPoints; ?>" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+
+                                </div>
+                            </div>
                         </div>
-                    </aside>
-                </div>
+                    </div>
+                    <div class="profile-card bg-white w-100 shadow mt-4 px-4 py-4 px-md-5">
+                        <h5 class="text-primary fw-bold">Участие в проектах Фонда</h5>
+                        <div class="row">
+                            <div class="col-12">
+                                <p class="mt-3">
+                                <?php 
+                                
+                                $activityCount = count($fond_activities);
+                                if($activityCount !== 0){
+                                    foreach($fond_activities as $key => $activity):
+                                        $activityType = $activity['activity_type'];
+                                        $activityTypeText = ($activityType === "curator") ? "руководитель" : "участник";
+                                        
+                                        // Добавляем первой букве текста большую букву, если это первый элемент
+                                        if ($key == 0) {
+                                            $activityTypeText = mb_convert_case($activityTypeText, MB_CASE_TITLE, 'UTF-8');
+                                        }
+
+                                        // Выводим текст активности
+                                        echo $activityTypeText . " направления <a href='#' class='text-primary'>«" . $activity['title'] . "»</a>";
+
+                                        // Добавляем запятую, если это не последний элемент
+                                        if ($key < $activityCount - 1) {
+                                            echo ", ";
+                                        }
+                                    endforeach;
+                                } else {
+                                    echo 'Нет данных';
+                                }
+                                
+                                ?>
+
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="profile-card bg-white w-100 shadow mt-4 px-4 py-4 px-md-5">
+                        <h5 class="text-primary fw-bold">Статистика </h5>
+                        <div class="row mt-4">
+                            <div class="col-lg-6">
+                                <div class="row">
+                                    <div class="col-md-4 d-flex flex-column mt-2 text-center">
+                                        <span>Публикации</span>
+                                        <span class="fs-1 fw-bold"><?php echo $statistics['total_publications'] ?? 0?></span>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <ul class="stats-list">
+                                            <li class="w-100 d-flex justify-content-between px-4 mt-2"><a href="#" class="text-decoration-none">SCOPUS/WoS:</a><span class="fw-bold"><?php echo $statistics['scopus_publications'] ?? 0?? 0?></span></li>
+                                            <li class="w-100 d-flex justify-content-between px-4 mt-2"><a href="#" class="text-decoration-none">ВАК:</a><span class="fw-bold"><?php echo $statistics['vak_publications'] ?? 0?></span></li>
+                                            <li class="w-100 d-flex justify-content-between px-4 mt-2"><a href="#" class="text-decoration-none">РИНЦ:</a><span class="fw-bold"><?php echo $statistics['rinc_publications'] ?? 0?></span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="row">
+                                    <div class="col-md-4 d-flex flex-column align-items-center text-center mt-3 mt-md-0">
+                                        <span>Конференции и конкурсы</span>
+                                        <span class="fs-1 fw-bold"><?php echo $statistics['total_conferences'] ?? 0?></span>
+                                    </div>
+                                    <div class="col-md-8"><ul class="stats-list">
+                                        <li class="w-100 d-flex justify-content-between px-4 mt-2"><a href="#" class="text-decoration-none">Международные:</a><span class="fw-bold"><?php echo $statistics['international_conferences'] ?? 0?></span></li>
+                                        <li class="w-100 d-flex justify-content-between px-4 mt-2"><a href="#" class="text-decoration-none">Всероссийские:</a><span class="fw-bold"><?php echo $statistics['russian_conferences'] ?? 0?></span></li>
+                                        <li class="w-100 d-flex justify-content-between px-4 mt-2"><a href="#" class="text-decoration-none">Региональные:</a><span class="fw-bold"><?php echo $statistics['regional_conferences'] ?? 0?></span></li>
+                                    </ul></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="profile-card bg-white w-100 shadow mt-4 px-4 py-4 px-md-5">
+                        <h5 class="text-primary fw-bold">Последние публикации</h5>
+                        <div class="row blog-posts">
+                        <?php
+                        $count = 0; // Инициализируем счетчик
+
+                        foreach ($ScientificActivityService->getAll($UserData['id']) as $activity) {
+                            if ($count >= 4) {
+                                break; // Если выведено 4 элемента, завершаем цикл
+                            }
+                            ?>
+
+                            <div class="col-lg-6 blog-post mt-4">
+                                <div class="blog-post-image w-100 mb-3">
+                                    <img src="<?php echo (!empty($activity['image'])) ? $activity['image'] : '/assets/img/placeholder.jpg'; ?>" alt="blog-post-image">
+                                </div>
+                                <small class="blog-post-info text-muted"><?php echo $ScientificActivityService->generateActivityString($activity['activity_category'], $activity['activity_type'], $activity['activity_subtype'], $activity['year'])?></small>
+                                <h6 class="blog-post-title mt-3"><?php echo $activity['title']?></h6>
+                                <p class="blog-post-preview-text mt-3"><?php echo $activity['preview_text']?></p>
+                                <a href="<?php echo $activity['link'] ?>" class="text-primary blog-post-link">Ссылка <i class="fa-solid fa-up-right-from-square ms-2"></i></a>
+                            </div>
+
+                            <?php
+                            $count++; // Увеличиваем счетчик
+                        }
+                        ?>
+                        </div>
+                    </div>
+                </main>
+            </div>
+            <div class="col-lg-3">
+                <aside class="sidebar">
+                    <div class="profile-card bg-white w-100 shadow mt-4 p-4">
+                        <h5 class="text-primary fw-bold">Обо мне</h5>
+                        <p class="mt-4">
+                            <?php echo $UserData['about_text'] ?? 'Не заполнено'?>
+                        </p>
+                    </div>
+                    <div class="profile-card bg-white w-100 shadow mt-4 p-4">
+                        <h5 class="text-primary fw-bold">Контакты</h5>
+                        <ul class="contacts-list">
+                            <li class="mt-4"><small><i class="text-primary fa-solid fa-envelope"></i><span class="ms-3 text-break"><?php echo $UserData['email']?></span></small></li>
+                            <?php if($UserData['telegram']): ?>
+                                <li class="mt-4"><small><a href="https://t.me/<?php echo $UserData['telegram']?>"><i class="fa-brands fa-telegram" style="color: #2AABEE"></i><span class="ms-3 text-break"><?php echo $UserData['telegram']?></span></a></small></li>
+                            <?php endif ?>
+                            <?php if($UserData['phone']): ?>
+                                <li class="mt-4"><small><i class="text-primary fa-solid fa-phone" ></i><span class="ms-3 text-break"><?php echo $UserData['phone']?></span></small></li>
+                            <?php endif ?>
+                            
+                        </ul>
+                    </div>
+                </aside>
             </div>
         </div>
     </div>
+</div>
     <!-- Modal -->
     <div class="modal fade" id="full-profile-info" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
