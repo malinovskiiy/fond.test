@@ -1,0 +1,153 @@
+/* GLOBAL STYLES */
+* {
+    font-family: 'Muller', sans-serif;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+a {
+    text-decoration: none;
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+}
+
+/* Header styles */
+
+@media screen and (max-width: 1000px) {
+    .dropdown-menu[data-bs-popper] {
+        top: 100%;
+        right: 0;
+        left: 70%;
+        margin-top: var(--bs-dropdown-spacer);
+    }
+}
+
+/* New primary text */
+.text-primary {
+    color: #008389 !important;
+}
+
+.btn-primary {
+    background: #008389;
+    border: 0;
+    border-radius: 0;
+    padding: .5rem 2rem;
+    outline: none
+}
+
+.btn-primary:hover {
+    background: none;
+    color: #008389;
+    box-shadow: inset 0px 0px 2px #008389;
+}
+
+.btn-primary:active, .btn-outline-primary:hover {
+    background-color: #008389 !important;
+    color: white;
+    border: 0;
+}
+
+.btn-outline-primary {
+    color: #008389;
+    border: 0;
+    border-radius: 0;
+    padding: .5rem 2rem;
+    box-shadow: inset 0px 0px 2px #008389;
+}
+
+/* Styles of first profile card */
+
+.profile-picture img {
+    width: 115px;
+    height: 115px;
+    object-fit: cover;
+}
+
+.profile-tags li{
+    transition: .3s ease;
+}
+
+.profile-tags li:hover {
+    color: white !important;
+    cursor: pointer;
+    background: #008389;
+    border: 1px solid #008389;
+}
+
+/* Styles of rating profile card */
+
+.progress-bar {
+    background-color: #008389;
+}
+
+.rating-bar span:hover {
+    cursor: pointer;
+}
+
+.custom-tooltip {
+    --bs-tooltip-bg: #008389;
+    --bs-tooltip-padding-x: 1rem;
+    --bs-tooltip-padding-y: 1rem;
+    --bs-tooltip-opacity: 1;
+    --bs-tooltip-arrow-width: 1rem;
+    --bs-tooltip-arrow-height: 1rem;
+    --bs-tooltip-border-radius: 10px;
+}
+
+.tooltip .tooltip-inner {
+    background-color: #fff;
+    border: .063em solid #ccc;
+    color: #555;
+}
+
+.tooltip.right {
+    padding: 0 .063em;
+}
+
+/* Styles of stats profile card */
+
+.stats-list a{
+    transition: .3s ease-in-out;
+    color: #555
+}
+
+.stats-list a:hover{
+    color: #008389;
+}
+
+/* Contacts card styles */
+
+.contacts-list li {
+    display: flex;
+    align-items: center;
+}
+
+.contacts-list li i{
+    font-size: 18px;
+}
+
+/* Blog profile card styles */
+
+.blog-post-image img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+/* Edit profile stylers */
+
+
+.nav-pills .nav-link.active{
+    color: #373A3C;
+    background-color: transparent;
+    border: 1px solid #222;
+}
+
+.nav-pills .nav-link{
+    color: #222;
+}
